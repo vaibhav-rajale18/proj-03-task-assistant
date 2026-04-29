@@ -1,9 +1,7 @@
 const express = require("express");
 const cors = require("cors");
-require("dotenv").config();
+require("dotenv").config({ path: __dirname + "/.env" });
 const connectDB = require("./config/db");
-
-dotenv.config({ path: "./.env" });
 
 // Connect Database
 connectDB();
@@ -19,7 +17,6 @@ app.get("/", (req, res) => {
   res.send("Mark3 Task Assistant API Running...");
 });
 
-// Port
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
