@@ -5,7 +5,7 @@ const authMiddleware = async (req, res, next) => {
     // Read token from Authorization header
     const authHeader = req.headers.authorization;
     if (!authHeader) {
-      return res.status(401).json({ error: "Authorization header missing" });
+      return res.status(401).json({ error: "Not authorized" });
     }
 
     // Extract token after "Bearer "
