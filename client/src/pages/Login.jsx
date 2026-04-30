@@ -23,6 +23,7 @@ const Login = () => {
       localStorage.setItem("token", data.token);
 
       console.log("Login successful:", data);
+      window.location.href = "/"; 
     } else {
       console.log("Login failed:", data);
     }
