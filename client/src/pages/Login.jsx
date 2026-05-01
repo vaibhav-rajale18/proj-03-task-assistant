@@ -4,9 +4,11 @@ import { Link } from "react-router-dom";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
 
     try {
       const res = await fetch("http://localhost:5000/api/auth/login", {
@@ -28,8 +30,12 @@ const Login = () => {
         // Redirect to home
         window.location.href = "/";
       } else {
-        console.log("Login failed:", data);
-      }
+        setError(data.message || "Login failed");
+        setTimeout(() => {
+          setError("");
+        }, 3000);
+
+            }
     } catch (error) {
       console.log("Server error:", error);
     }
@@ -72,6 +78,8 @@ const Login = () => {
               style={styles.input}
             />
           </div>
+
+          {error && <p style={styles.errorText}>{error}</p>}
 
           <button type="submit" style={styles.button}>
             Login
@@ -163,6 +171,12 @@ const styles = {
     textDecoration: "none",
     fontWeight: "600",
   },
+  errorText: {
+  color: "red",
+  textAlign: "center",
+  fontSize: "14px",
+},
+
 };
 
 export default Login;
