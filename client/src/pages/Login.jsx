@@ -6,42 +6,46 @@ const Login = () => {
   const [password, setPassword] = useState("");
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    const res = await fetch("http://localhost:5000/api/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (res.ok) {
-      // Store token
-      localStorage.setItem("token", data.token);
+      if (res.ok) {
+        // Store token
+        localStorage.setItem("token", data.token);
 
-      console.log("Login successful:", data);
-      window.location.href = "/"; 
-    } else {
-      console.log("Login failed:", data);
+        console.log("Login successful:", data);
+
+        // Redirect to home
+        window.location.href = "/";
+      } else {
+        console.log("Login failed:", data);
+      }
+    } catch (error) {
+      console.log("Server error:", error);
     }
-  } catch (error) {
-    console.log("Server error:", error);
-  }
-};
+  };
 
   return (
     <div style={styles.container}>
       <div style={styles.card}>
         <h1 style={styles.title}>Login</h1>
+
         <form onSubmit={handleSubmit} style={styles.form}>
           <div style={styles.formGroup}>
             <label htmlFor="email" style={styles.label}>
               Email:
             </label>
+
             <input
               type="email"
               id="email"
@@ -57,6 +61,7 @@ const Login = () => {
             <label htmlFor="password" style={styles.label}>
               Password:
             </label>
+
             <input
               type="password"
               id="password"
@@ -69,14 +74,15 @@ const Login = () => {
           </div>
 
           <button type="submit" style={styles.button}>
-            <p style={styles.linkText}>
-  Don’t have an account?{" "}
-  <Link to="/signup" style={styles.link}>
-    Signup
-  </Link>
-</p>
-            
+            Login
           </button>
+
+          <p style={styles.linkText}>
+            Don’t have an account?{" "}
+            <Link to="/signup" style={styles.link}>
+              Signup
+            </Link>
+          </p>
         </form>
       </div>
     </div>
@@ -91,6 +97,7 @@ const styles = {
     minHeight: "100vh",
     backgroundColor: "#f5f5f5",
   },
+
   card: {
     backgroundColor: "white",
     padding: "40px",
@@ -99,27 +106,32 @@ const styles = {
     width: "100%",
     maxWidth: "400px",
   },
+
   title: {
     textAlign: "center",
     marginBottom: "30px",
     color: "#333",
     fontSize: "28px",
   },
+
   form: {
     display: "flex",
     flexDirection: "column",
     gap: "20px",
   },
+
   formGroup: {
     display: "flex",
     flexDirection: "column",
     gap: "8px",
   },
+
   label: {
     fontSize: "14px",
     fontWeight: "500",
     color: "#333",
   },
+
   input: {
     padding: "10px 12px",
     fontSize: "14px",
@@ -127,19 +139,8 @@ const styles = {
     borderRadius: "4px",
     fontFamily: "inherit",
     outline: "none",
-    transition: "border-color 0.3s",
   },
-  linkText: {
-  textAlign: "center",
-  marginTop: "10px",
-  fontSize: "14px",
-},
 
-link: {
-  color: "#007bff",
-  textDecoration: "none",
-  fontWeight: "600",
-},
   button: {
     padding: "12px 20px",
     fontSize: "16px",
@@ -149,7 +150,18 @@ link: {
     border: "none",
     borderRadius: "4px",
     cursor: "pointer",
-    transition: "backgroundColor 0.3s",
+  },
+
+  linkText: {
+    textAlign: "center",
+    marginTop: "10px",
+    fontSize: "14px",
+  },
+
+  link: {
+    color: "#007bff",
+    textDecoration: "none",
+    fontWeight: "600",
   },
 };
 
