@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const Signup = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -23,10 +23,10 @@ const Signup = () => {
       const data = await res.json();
 
       if (res.ok) {
-        // Store token
         localStorage.setItem("token", data.token);
 
         console.log("Signup successful:", data);
+
         navigate("/");
       } else {
         console.log("Signup failed:", data);
@@ -39,12 +39,14 @@ const Signup = () => {
   return (
     <div style={styles.container}>
       <div style={styles.card}>
-        <h1 style={styles.title}>Signup</h1>
+        <h1 style={styles.title}>Sign Up</h1>
+
         <form onSubmit={handleSubmit} style={styles.form}>
           <div style={styles.formGroup}>
             <label htmlFor="name" style={styles.label}>
               Name:
             </label>
+
             <input
               type="text"
               id="name"
@@ -60,6 +62,7 @@ const Signup = () => {
             <label htmlFor="email" style={styles.label}>
               Email:
             </label>
+
             <input
               type="email"
               id="email"
@@ -75,6 +78,7 @@ const Signup = () => {
             <label htmlFor="password" style={styles.label}>
               Password:
             </label>
+
             <input
               type="password"
               id="password"
@@ -87,14 +91,15 @@ const Signup = () => {
           </div>
 
           <button type="submit" style={styles.button}>
-            <p style={styles.linkText}>
-  Already have an account?{" "}
-  <Link to="/login" style={styles.link}>
-    Login
-  </Link>
-</p>
-            
+            Sign Up
           </button>
+
+          <p style={styles.linkText}>
+            Already have an account?{" "}
+            <Link to="/login" style={styles.link}>
+              Login
+            </Link>
+          </p>
         </form>
       </div>
     </div>
@@ -109,6 +114,7 @@ const styles = {
     minHeight: "100vh",
     backgroundColor: "#f5f5f5",
   },
+
   card: {
     backgroundColor: "white",
     padding: "40px",
@@ -117,19 +123,23 @@ const styles = {
     width: "100%",
     maxWidth: "400px",
   },
+
   title: {
     textAlign: "center",
     marginBottom: "30px",
     color: "#333",
     fontSize: "28px",
   },
+
   form: {
     display: "flex",
     flexDirection: "column",
   },
+
   formGroup: {
     marginBottom: "20px",
   },
+
   label: {
     display: "block",
     marginBottom: "8px",
@@ -137,6 +147,7 @@ const styles = {
     fontSize: "14px",
     fontWeight: "500",
   },
+
   input: {
     width: "100%",
     padding: "10px",
@@ -146,27 +157,29 @@ const styles = {
     boxSizing: "border-box",
     fontFamily: "inherit",
   },
-  linkText: {
-  textAlign: "center",
-  marginTop: "10px",
-  fontSize: "14px",
-},
 
-link: {
-  color: "#007bff",
-  textDecoration: "none",
-  fontWeight: "600",
-},
   button: {
-    padding: "10px",
+    padding: "12px",
     backgroundColor: "#007bff",
     color: "white",
     border: "none",
     borderRadius: "4px",
     fontSize: "16px",
-    fontWeight: "500",
+    fontWeight: "600",
     cursor: "pointer",
     marginTop: "10px",
+  },
+
+  linkText: {
+    textAlign: "center",
+    marginTop: "15px",
+    fontSize: "14px",
+  },
+
+  link: {
+    color: "#007bff",
+    textDecoration: "none",
+    fontWeight: "600",
   },
 };
 
