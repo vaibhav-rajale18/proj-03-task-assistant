@@ -1,43 +1,61 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 
-const Login = () => {
+const Signup = () => {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    const res = await fetch("http://localhost:5000/api/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, email, password }),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (res.ok) {
-      // Store token
-      localStorage.setItem("token", data.token);
+      if (res.ok) {
+        // Store token
+        localStorage.setItem("token", data.token);
 
-      console.log("Login successful:", data);
-      window.location.href = "/"; 
-    } else {
-      console.log("Login failed:", data);
+        console.log("Signup successful:", data);
+        navigate("/");
+      } else {
+        console.log("Signup failed:", data);
+      }
+    } catch (error) {
+      console.log("Server error:", error);
     }
-  } catch (error) {
-    console.log("Server error:", error);
-  }
-};
+  };
 
   return (
     <div style={styles.container}>
       <div style={styles.card}>
-        <h1 style={styles.title}>Login</h1>
+        <h1 style={styles.title}>Signup</h1>
         <form onSubmit={handleSubmit} style={styles.form}>
+          <div style={styles.formGroup}>
+            <label htmlFor="name" style={styles.label}>
+              Name:
+            </label>
+            <input
+              type="text"
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter your name"
+              required
+              style={styles.input}
+            />
+          </div>
+
           <div style={styles.formGroup}>
             <label htmlFor="email" style={styles.label}>
               Email:
@@ -70,9 +88,9 @@ const Login = () => {
 
           <button type="submit" style={styles.button}>
             <p style={styles.linkText}>
-  Don’t have an account?{" "}
-  <Link to="/signup" style={styles.link}>
-    Signup
+  Already have an account?{" "}
+  <Link to="/login" style={styles.link}>
+    Login
   </Link>
 </p>
             
@@ -108,26 +126,25 @@ const styles = {
   form: {
     display: "flex",
     flexDirection: "column",
-    gap: "20px",
   },
   formGroup: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "8px",
+    marginBottom: "20px",
   },
   label: {
+    display: "block",
+    marginBottom: "8px",
+    color: "#555",
     fontSize: "14px",
     fontWeight: "500",
-    color: "#333",
   },
   input: {
-    padding: "10px 12px",
-    fontSize: "14px",
-    border: "1px solid #ddd",
+    width: "100%",
+    padding: "10px",
     borderRadius: "4px",
+    border: "1px solid #ddd",
+    fontSize: "14px",
+    boxSizing: "border-box",
     fontFamily: "inherit",
-    outline: "none",
-    transition: "border-color 0.3s",
   },
   linkText: {
   textAlign: "center",
@@ -141,16 +158,16 @@ link: {
   fontWeight: "600",
 },
   button: {
-    padding: "12px 20px",
-    fontSize: "16px",
-    fontWeight: "600",
-    color: "white",
+    padding: "10px",
     backgroundColor: "#007bff",
+    color: "white",
     border: "none",
     borderRadius: "4px",
+    fontSize: "16px",
+    fontWeight: "500",
     cursor: "pointer",
-    transition: "backgroundColor 0.3s",
+    marginTop: "10px",
   },
 };
 
-export default Login;
+export default Signup;
