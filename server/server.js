@@ -4,6 +4,7 @@ require("dotenv").config({ path: __dirname + "/.env" });
 
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
+const taskRoutes = require("./routes/taskRoutes");
 const authMiddleware = require("./middleware/authMiddleware");
 
 // Connect Database
@@ -17,6 +18,7 @@ app.use(express.json());
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/tasks", taskRoutes);
 
 // Root Test Route
 app.get("/", (req, res) => {
