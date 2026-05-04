@@ -49,31 +49,27 @@ const Tasks = () => {
   };
 
   useEffect(() => {
-  const loadTasks = async () => {
-    await fetchTasks();
-  };
+    const loadTasks = async () => {
+      await fetchTasks();
+    };
 
-  loadTasks();
-}, []);
+    loadTasks();
+  }, []);
 
   return (
     <main>
       <TaskForm onTaskCreated={handleTaskCreated} />
 
       {loading ? (
-        <p>Loading tasks...</p>
+        <p>Loading your tasks...</p>
       ) : error ? (
-        <p>{error}</p>
+        <p>Error: {error}</p>
       ) : tasks.length === 0 ? (
-        <p>No tasks yet. Create your first task.</p>
+        <p>You have no tasks yet. Create your first task 🚀</p>
       ) : (
         <section>
           {tasks.map((task) => (
-            <TaskCard
-              key={task._id}
-              task={task}
-              onTaskUpdated={fetchTasks}
-            />
+            <TaskCard key={task._id} task={task} onTaskUpdated={fetchTasks} />
           ))}
         </section>
       )}
