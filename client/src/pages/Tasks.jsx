@@ -1,13 +1,5 @@
 import { useEffect, useState } from "react";
-
-const TaskForm = () => {
-  return (
-    <section>
-      <h2>Create a new task</h2>
-      <p>Task creation UI will appear here.</p>
-    </section>
-  );
-};
+import TaskForm from "../components/TaskForm";
 
 const TaskCard = ({ task }) => {
   const dueDate = task?.dueDate
@@ -28,6 +20,10 @@ const Tasks = () => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const handleTaskCreated = (newTask) => {
+    setTasks((currentTasks) => [newTask, ...currentTasks]);
+  };
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -69,7 +65,7 @@ const Tasks = () => {
 
   return (
     <main>
-      <TaskForm />
+      <TaskForm onTaskCreated={handleTaskCreated} />
 
       {loading ? (
         <p>Loading tasks...</p>
