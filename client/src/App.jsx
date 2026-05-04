@@ -13,20 +13,22 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
-        {/* Protected Routes */}
+        {/* Protected Home Route */}
         <Route
           path="/"
           element={
             <ProtectedRoute>
-              <Tasks />
+              <Home />
             </ProtectedRoute>
           }
         />
+
+        {/* Protected Tasks Route */}
         <Route
-          path="/home"
+          path="/tasks"
           element={
             <ProtectedRoute>
-              <Home />
+              <Tasks />
             </ProtectedRoute>
           }
         />
