@@ -1,14 +1,15 @@
 import { useState } from "react";
 
 const TaskCard = ({ task, onTaskUpdated }) => {
-  const [loading, setLoading] = useState(false);
+  const [loadingComplete, setLoadingComplete] = useState(false);
+  const [loadingDelete, setLoadingDelete] = useState(false);
   const [error, setError] = useState("");
 
   const taskId = task?._id;
   const dueDate = task?.dueDate
     ? new Date(task.dueDate).toLocaleDateString()
     : null;
-const status = task?.status || "todo";
+  const status = task?.status || "todo";
 
   const handleComplete = async () => {
     if (!taskId || status === "completed") {
@@ -21,18 +22,21 @@ const status = task?.status || "todo";
       return;
     }
 
-    setLoading(true);
+    setLoadingComplete(true);
     setError("");
 
     try {
-      const response = await fetch(`http://localhost:5000/api/tasks/${taskId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+      const response = await fetch(
+        `http://localhost:5000/api/tasks/${taskId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ status: "completed" }),
         },
-        body: JSON.stringify({ status: "completed" }),
-      });
+      );
 
       const data = await response.json();
       if (!response.ok) {
@@ -47,7 +51,7 @@ const status = task?.status || "todo";
       console.error(submitError);
       setError("Unable to complete task. Please try again.");
     } finally {
-      setLoading(false);
+      setLoadingComplete(false);
     }
   };
 
@@ -63,16 +67,19 @@ const status = task?.status || "todo";
       return;
     }
 
-    setLoading(true);
+    setLoadingDelete(true);
     setError("");
 
     try {
-      const response = await fetch(`http://localhost:5000/api/tasks/${taskId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const response = await fetch(
+        `http://localhost:5000/api/tasks/${taskId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      });
+      );
 
       if (!response.ok) {
         const data = await response.json();
@@ -87,7 +94,7 @@ const status = task?.status || "todo";
       console.error(deleteError);
       setError("Unable to delete task. Please try again.");
     } finally {
-      setLoading(false);
+      setLoadingDelete(false);
     }
   };
 
@@ -97,18 +104,22 @@ const status = task?.status || "todo";
       {task?.description && <p>{task.description}</p>}
       {task?.priority && <p>Priority: {task.priority}</p>}
       {dueDate && <p>Due date: {dueDate}</p>}
-      <p>Status: {status}</p>
+      <p>Status: {status === "completed" ? "Completed ✅" : "Todo ⏳"}</p>
 
       <div>
         <button
           type="button"
           onClick={handleComplete}
-          disabled={loading || status === "completed"}
+          disabled={loadingComplete || status === "completed"}
         >
-          {status === "completed" ? "Completed" : "Complete Task"}
+          {status === "completed"
+            ? "Completed"
+            : loadingComplete
+              ? "Updating..."
+              : "Complete Task"}
         </button>
-        <button type="button" onClick={handleDelete} disabled={loading}>
-          Delete Task
+        <button type="button" onClick={handleDelete} disabled={loadingDelete}>
+          {loadingDelete ? "Deleting..." : "Delete Task"}
         </button>
       </div>
 

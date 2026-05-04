@@ -49,8 +49,12 @@ const Tasks = () => {
   };
 
   useEffect(() => {
-    fetchTasks();
-  }, []);
+  const loadTasks = async () => {
+    await fetchTasks();
+  };
+
+  loadTasks();
+}, []);
 
   return (
     <main>
