@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,7 +30,7 @@ const Login = () => {
         console.log("Login successful:", data);
 
         // Redirect to home
-        window.location.href = "/";
+        navigate("/");
       } else {
         setError(data.message || "Login failed");
         setTimeout(() => {

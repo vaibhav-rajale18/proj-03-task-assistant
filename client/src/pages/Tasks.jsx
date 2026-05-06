@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import TaskForm from "../components/tasks/TaskForm";
 import TaskCard from "../components/tasks/TaskCard";
 
 const Tasks = () => {
+  const navigate = useNavigate();
+
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -48,6 +51,15 @@ const Tasks = () => {
     fetchTasks();
   };
 
+  const handleBackHome = () => {
+  navigate("/");
+};
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
+
   useEffect(() => {
     const loadTasks = async () => {
       await fetchTasks();
@@ -69,7 +81,26 @@ const Tasks = () => {
 
   return (
     <main style={{ padding: "20px", maxWidth: "900px", margin: "0 auto" }}>
-      
+
+      {/* Navigation */}
+      <section
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          marginBottom: "20px",
+          flexWrap: "wrap",
+          gap: "10px",
+        }}
+      >
+        <button onClick={handleBackHome}>
+          ← Back To Home
+        </button>
+
+        <button onClick={handleLogout}>
+          Logout
+        </button>
+      </section>
+
       {/* Page Header */}
       <section style={{ marginBottom: "25px" }}>
         <h1>My Tasks</h1>
