@@ -28,7 +28,7 @@ const TaskForm = ({ onTaskCreated }) => {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      setError("Authorization token not found. Please log in.");
+      setError("Authorization token not found.");
       return;
     }
 
@@ -42,19 +42,22 @@ const TaskForm = ({ onTaskCreated }) => {
         dueDate: dueDate || undefined,
       };
 
-      const response = await fetch("http://localhost:5000/api/tasks", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        "http://localhost:5000/api/tasks",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || data.message || "Unable to create task.");
+        setError(data.message || "Unable to create task.");
         return;
       }
 
@@ -63,106 +66,101 @@ const TaskForm = ({ onTaskCreated }) => {
       if (typeof onTaskCreated === "function") {
         onTaskCreated(data);
       }
-    } catch (fetchError) {
-      console.error(fetchError);
-      setError("Unable to create task. Please try again.");
+
+    } catch (error) {
+      console.error(error);
+      setError("Unable to create task.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <section
-      style={{
-        border: "1px solid #ccc",
-        borderRadius: "10px",
-        padding: "20px",
-      }}
-    >
-      <h2 style={{ marginBottom: "5px" }}>Create New Task</h2>
-      <p style={{ marginBottom: "20px" }}>
+    <section style={styles.container}>
+      
+      <h2 style={styles.title}>
+        Create New Task
+      </h2>
+
+      <p style={styles.subtitle}>
         Add your next focus item.
       </p>
 
       <form onSubmit={handleSubmit}>
         
         {/* Title */}
-        <div style={{ marginBottom: "15px" }}>
-          <label htmlFor="task-title">
-            <strong>Title *</strong>
+        <div style={styles.field}>
+          <label style={styles.label}>
+            Title *
           </label>
-          <br />
+
           <input
-            id="task-title"
             type="text"
             value={title}
-            onChange={(event) => setTitle(event.target.value)}
+            onChange={(event) =>
+              setTitle(event.target.value)
+            }
             required
-            style={{
-              width: "100%",
-              marginTop: "5px",
-              padding: "8px",
-            }}
+            style={styles.input}
           />
         </div>
 
         {/* Description */}
-        <div style={{ marginBottom: "15px" }}>
-          <label htmlFor="task-description">
-            <strong>Description</strong>
+        <div style={styles.field}>
+          <label style={styles.label}>
+            Description
           </label>
-          <br />
+
           <textarea
-            id="task-description"
             value={description}
-            onChange={(event) => setDescription(event.target.value)}
-            rows="3"
-            style={{
-              width: "100%",
-              marginTop: "5px",
-              padding: "8px",
-            }}
+            onChange={(event) =>
+              setDescription(event.target.value)
+            }
+            rows="4"
+            style={styles.input}
           />
         </div>
 
         {/* Priority */}
-        <div style={{ marginBottom: "15px" }}>
-          <label htmlFor="task-priority">
-            <strong>Priority</strong>
+        <div style={styles.field}>
+          <label style={styles.label}>
+            Priority
           </label>
-          <br />
+
           <select
-            id="task-priority"
             value={priority}
-            onChange={(event) => setPriority(event.target.value)}
-            style={{
-              width: "100%",
-              marginTop: "5px",
-              padding: "8px",
-            }}
+            onChange={(event) =>
+              setPriority(event.target.value)
+            }
+            style={styles.input}
           >
-            <option value="low">Low 🟢</option>
-            <option value="medium">Medium 🟡</option>
-            <option value="high">High 🔴</option>
+            <option value="low">
+              Low 🟢
+            </option>
+
+            <option value="medium">
+              Medium 🟡
+            </option>
+
+            <option value="high">
+              High 🔴
+            </option>
           </select>
         </div>
 
         {/* Due Date */}
-        <div style={{ marginBottom: "20px" }}>
-          <label htmlFor="task-due-date">
-            <strong>Due Date</strong>
+        <div style={styles.field}>
+          <label style={styles.label}>
+            Due Date
           </label>
-          <br />
+
           <input
-            id="task-due-date"
             type="date"
             value={dueDate}
-            onChange={(event) => setDueDate(event.target.value)}
-            style={{
-              width: "100%",
-              marginTop: "5px",
-              padding: "8px",
-            }}
+            onChange={(event) =>
+              setDueDate(event.target.value)
+            }
+            style={styles.input}
           />
         </div>
 
@@ -170,22 +168,85 @@ const TaskForm = ({ onTaskCreated }) => {
         <button
           type="submit"
           disabled={loading}
-          style={{
-            padding: "10px 18px",
-          }}
+          style={styles.button}
         >
-          {loading ? "Creating..." : "Create Task"}
+          {loading
+            ? "Creating..."
+            : "Create Task"}
         </button>
 
         {/* Error */}
         {error && (
-          <p style={{ marginTop: "15px" }}>
+          <p style={styles.error}>
             {error}
           </p>
         )}
+
       </form>
+
     </section>
   );
+};
+
+const styles = {
+  container: {
+    backgroundColor: "white",
+    border: "1px solid #ddd",
+    borderRadius: "10px",
+    padding: "30px",
+    maxWidth: "550px",
+    margin: "0 auto",
+  },
+
+  title: {
+    fontSize: "30px",
+    color: "#222",
+    marginBottom: "10px",
+    textAlign: "center",
+  },
+
+  subtitle: {
+    fontSize: "16px",
+    color: "#666",
+    textAlign: "center",
+    marginBottom: "30px",
+  },
+
+  field: {
+    marginBottom: "20px",
+  },
+
+  label: {
+    display: "block",
+    marginBottom: "8px",
+    fontWeight: "600",
+    color: "#333",
+  },
+
+  input: {
+    width: "100%",
+    padding: "12px",
+    border: "1px solid #ddd",
+    borderRadius: "6px",
+    fontSize: "15px",
+    boxSizing: "border-box",
+  },
+
+  button: {
+    width: "100%",
+    padding: "14px",
+    border: "none",
+    borderRadius: "6px",
+    cursor: "pointer",
+    fontSize: "16px",
+    fontWeight: "600",
+  },
+
+  error: {
+    marginTop: "15px",
+    color: "red",
+    textAlign: "center",
+  },
 };
 
 export default TaskForm;

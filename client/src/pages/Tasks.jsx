@@ -18,7 +18,7 @@ const Tasks = () => {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      setError("No authorization token found. Please log in.");
+      setError("No authorization token found.");
       setLoading(false);
       return;
     }
@@ -37,14 +37,14 @@ const Tasks = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || data.message || "Unable to load tasks.");
+        setError(data.message || "Unable to load tasks.");
         setTasks([]);
       } else {
         setTasks(Array.isArray(data) ? data : []);
       }
     } catch (error) {
       console.error(error);
-      setError("Unable to load tasks. Please try again later.");
+      setError("Unable to load tasks.");
       setTasks([]);
     } finally {
       setLoading(false);
@@ -66,12 +66,12 @@ const Tasks = () => {
   };
 
   useEffect(() => {
-  const loadTasks = async () => {
-    await fetchTasks();
-  };
+    const loadTasks = async () => {
+      await fetchTasks();
+    };
 
-  loadTasks();
-}, []);
+    loadTasks();
+  }, []);
 
   const totalTasks = tasks.length;
 
@@ -84,85 +84,176 @@ const Tasks = () => {
   ).length;
 
   return (
-    <main style={{ padding: "20px", maxWidth: "900px", margin: "0 auto" }}>
+    <div style={styles.container}>
+      <div style={styles.dashboard}>
 
-      {/* Navigation */}
-      <section
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginBottom: "20px",
-        }}
-      >
-        <button onClick={handleBackHome}>
-          ← Back To Home
-        </button>
-
-        <button onClick={handleLogout}>
-          Logout
-        </button>
-      </section>
-
-      {/* CREATE MODE */}
-      {isCreateMode ? (
-        <section style={{ marginTop: "40px" }}>
-          <TaskForm onTaskCreated={handleTaskCreated} />
-        </section>
-      ) : (
-        <>
-          {/* Header */}
-          <section style={{ marginBottom: "25px" }}>
-            <h1>My Tasks</h1>
-            <p>Stay organized and keep moving.</p>
-          </section>
-
-          {/* Stats */}
-          <section
-            style={{
-              display: "flex",
-              gap: "15px",
-              marginBottom: "25px",
-              flexWrap: "wrap",
-            }}
+        {/* Navigation */}
+        <div style={styles.navigation}>
+          <button
+            onClick={handleBackHome}
+            style={styles.button}
           >
-            <div style={{ padding: "15px", border: "1px solid #ccc" }}>
-              <h3>Total</h3>
-              <p>{totalTasks}</p>
+            ← Back To Home
+          </button>
+
+          <button
+            onClick={handleLogout}
+            style={styles.button}
+          >
+            Logout
+          </button>
+        </div>
+
+        {/* CREATE MODE */}
+        {isCreateMode ? (
+          <div style={{ marginTop: "40px" }}>
+            <TaskForm onTaskCreated={handleTaskCreated} />
+          </div>
+        ) : (
+          <>
+            {/* Header */}
+            <div style={styles.header}>
+              <h1 style={styles.title}>
+                My Tasks
+              </h1>
+
+              <p style={styles.subtitle}>
+                Stay organized and keep moving.
+              </p>
             </div>
 
-            <div style={{ padding: "15px", border: "1px solid #ccc" }}>
-              <h3>Pending</h3>
-              <p>{pendingTasks}</p>
+            {/* Stats */}
+            <div style={styles.summaryCards}>
+              
+              <div style={styles.card}>
+                <h3>Total Tasks</h3>
+                <p style={styles.cardValue}>
+                  {totalTasks}
+                </p>
+              </div>
+
+              <div style={styles.card}>
+                <h3>Pending Tasks</h3>
+                <p style={styles.cardValue}>
+                  {pendingTasks}
+                </p>
+              </div>
+
+              <div style={styles.card}>
+                <h3>Completed Tasks</h3>
+                <p style={styles.cardValue}>
+                  {completedTasks}
+                </p>
+              </div>
+
             </div>
 
-            <div style={{ padding: "15px", border: "1px solid #ccc" }}>
-              <h3>Completed</h3>
-              <p>{completedTasks}</p>
-            </div>
-          </section>
+            {/* Tasks */}
+            {loading ? (
+              <p style={styles.message}>
+                Loading your tasks...
+              </p>
+            ) : error ? (
+              <p style={styles.message}>
+                {error}
+              </p>
+            ) : tasks.length === 0 ? (
+              <p style={styles.message}>
+                No tasks yet 🚀
+              </p>
+            ) : (
+              <div style={styles.taskList}>
+                {tasks.map((task) => (
+                  <TaskCard
+                    key={task._id}
+                    task={task}
+                    onTaskUpdated={fetchTasks}
+                  />
+                ))}
+              </div>
+            )}
+          </>
+        )}
 
-          {/* Task List */}
-          {loading ? (
-            <p>Loading your tasks...</p>
-          ) : error ? (
-            <p>Error: {error}</p>
-          ) : tasks.length === 0 ? (
-            <p>No tasks yet 🚀</p>
-          ) : (
-            <section style={{ display: "grid", gap: "15px" }}>
-              {tasks.map((task) => (
-                <TaskCard
-                  key={task._id}
-                  task={task}
-                  onTaskUpdated={fetchTasks}
-                />
-              ))}
-            </section>
-          )}
-        </>
-      )}
-    </main>
+      </div>
+    </div>
   );
+};
+
+const styles = {
+  container: {
+    minHeight: "100vh",
+    backgroundColor: "#f5f5f5",
+    padding: "30px",
+  },
+
+  dashboard: {
+    maxWidth: "1100px",
+    margin: "0 auto",
+  },
+
+  navigation: {
+    display: "flex",
+    justifyContent: "space-between",
+    marginBottom: "30px",
+  },
+
+  header: {
+    textAlign: "center",
+    marginBottom: "40px",
+  },
+
+  title: {
+    fontSize: "38px",
+    color: "#222",
+    marginBottom: "10px",
+  },
+
+  subtitle: {
+    fontSize: "18px",
+    color: "#666",
+  },
+
+  summaryCards: {
+    display: "flex",
+    justifyContent: "center",
+    gap: "25px",
+    flexWrap: "wrap",
+    marginBottom: "40px",
+  },
+
+  card: {
+    backgroundColor: "white",
+    border: "1px solid #ddd",
+    borderRadius: "10px",
+    padding: "25px",
+    minWidth: "200px",
+    textAlign: "center",
+  },
+
+  cardValue: {
+    fontSize: "32px",
+    fontWeight: "bold",
+    marginTop: "10px",
+  },
+
+  button: {
+    padding: "12px 25px",
+    border: "none",
+    borderRadius: "6px",
+    cursor: "pointer",
+  },
+
+  taskList: {
+    display: "grid",
+    gap: "20px",
+  },
+
+  message: {
+    textAlign: "center",
+    fontSize: "18px",
+    color: "#666",
+  },
 };
 
 export default Tasks;

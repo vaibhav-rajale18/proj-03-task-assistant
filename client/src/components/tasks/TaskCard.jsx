@@ -22,7 +22,7 @@ const TaskCard = ({ task, onTaskUpdated }) => {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      setError("Authorization token not found. Please log in.");
+      setError("Authorization token not found.");
       return;
     }
 
@@ -45,31 +45,24 @@ const TaskCard = ({ task, onTaskUpdated }) => {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || data.message || "Unable to complete task.");
+        setError(data.message || "Unable to complete task.");
         return;
       }
 
-      if (typeof onTaskUpdated === "function") {
-        onTaskUpdated(data);
-      }
-    } catch (submitError) {
-      console.error(submitError);
-      setError("Unable to complete task. Please try again.");
+      onTaskUpdated(data);
+    } catch (error) {
+      console.error(error);
+      setError("Unable to complete task.");
     } finally {
       setLoadingComplete(false);
     }
   };
 
   const handleDelete = async () => {
-    if (!taskId) {
-      setError("Task ID is missing.");
-      return;
-    }
-
     const token = localStorage.getItem("token");
 
     if (!token) {
-      setError("Authorization token not found. Please log in.");
+      setError("Authorization token not found.");
       return;
     }
 
@@ -88,75 +81,63 @@ const TaskCard = ({ task, onTaskUpdated }) => {
       );
 
       if (!response.ok) {
-        const data = await response.json();
-        setError(data.error || data.message || "Unable to delete task.");
+        setError("Unable to delete task.");
         return;
       }
 
-      if (typeof onTaskUpdated === "function") {
-        onTaskUpdated({ _id: taskId, deleted: true });
-      }
-    } catch (deleteError) {
-      console.error(deleteError);
-      setError("Unable to delete task. Please try again.");
+      onTaskUpdated();
+    } catch (error) {
+      console.error(error);
+      setError("Unable to delete task.");
     } finally {
       setLoadingDelete(false);
     }
   };
 
   const getPriorityBadge = () => {
-    if (priority === "high") return "HIGH 🔴";
-    if (priority === "medium") return "MEDIUM 🟡";
-    return "LOW 🟢";
+    if (priority === "high") return "High 🔴";
+    if (priority === "medium") return "Medium 🟡";
+    return "Low 🟢";
   };
 
   const getStatusBadge = () => {
     if (status === "completed") return "Completed ✅";
-    if (status === "inProgress") return "In Progress 🔄";
     return "Todo ⏳";
   };
 
   return (
-    <article
-      style={{
-        border: "1px solid #ccc",
-        borderRadius: "10px",
-        padding: "20px",
-      }}
-    >
-      <h3 style={{ marginBottom: "10px" }}>
+    <article style={styles.card}>
+      
+      <h3 style={styles.title}>
         {task?.title || "Untitled Task"}
       </h3>
 
       {task?.description && (
-        <p style={{ marginBottom: "10px" }}>{task.description}</p>
+        <p style={styles.description}>
+          {task.description}
+        </p>
       )}
 
-      <p style={{ marginBottom: "8px" }}>
+      <p style={styles.info}>
         <strong>Priority:</strong> {getPriorityBadge()}
       </p>
 
       {dueDate && (
-        <p style={{ marginBottom: "8px" }}>
+        <p style={styles.info}>
           <strong>Due:</strong> {dueDate}
         </p>
       )}
 
-      <p style={{ marginBottom: "15px" }}>
+      <p style={styles.info}>
         <strong>Status:</strong> {getStatusBadge()}
       </p>
 
-      <div
-        style={{
-          display: "flex",
-          gap: "10px",
-          flexWrap: "wrap",
-        }}
-      >
+      <div style={styles.buttons}>
+        
         <button
-          type="button"
           onClick={handleComplete}
           disabled={loadingComplete || status === "completed"}
+          style={styles.button}
         >
           {status === "completed"
             ? "Completed"
@@ -166,21 +147,71 @@ const TaskCard = ({ task, onTaskUpdated }) => {
         </button>
 
         <button
-          type="button"
           onClick={handleDelete}
           disabled={loadingDelete}
+          style={styles.button}
         >
-          {loadingDelete ? "Deleting..." : "Delete Task"}
+          {loadingDelete
+            ? "Deleting..."
+            : "Delete Task"}
         </button>
+
       </div>
 
       {error && (
-        <p style={{ marginTop: "10px" }}>
+        <p style={styles.error}>
           {error}
         </p>
       )}
+
     </article>
   );
+};
+
+const styles = {
+  card: {
+    backgroundColor: "white",
+    border: "1px solid #ddd",
+    borderRadius: "10px",
+    padding: "25px",
+  },
+
+  title: {
+    fontSize: "24px",
+    color: "#222",
+    marginBottom: "15px",
+  },
+
+  description: {
+    fontSize: "16px",
+    color: "#666",
+    marginBottom: "15px",
+  },
+
+  info: {
+    fontSize: "15px",
+    color: "#444",
+    marginBottom: "10px",
+  },
+
+  buttons: {
+    display: "flex",
+    gap: "12px",
+    flexWrap: "wrap",
+    marginTop: "20px",
+  },
+
+  button: {
+    padding: "10px 18px",
+    border: "none",
+    borderRadius: "6px",
+    cursor: "pointer",
+  },
+
+  error: {
+    marginTop: "15px",
+    color: "red",
+  },
 };
 
 export default TaskCard;
