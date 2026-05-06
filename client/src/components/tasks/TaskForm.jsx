@@ -72,59 +72,117 @@ const TaskForm = ({ onTaskCreated }) => {
   };
 
   return (
-    <section>
-      <h2>Create a new task</h2>
+    <section
+      style={{
+        border: "1px solid #ccc",
+        borderRadius: "10px",
+        padding: "20px",
+      }}
+    >
+      <h2 style={{ marginBottom: "5px" }}>Create New Task</h2>
+      <p style={{ marginBottom: "20px" }}>
+        Add your next focus item.
+      </p>
+
       <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="task-title">Title *</label>
+        
+        {/* Title */}
+        <div style={{ marginBottom: "15px" }}>
+          <label htmlFor="task-title">
+            <strong>Title *</strong>
+          </label>
+          <br />
           <input
             id="task-title"
             type="text"
             value={title}
             onChange={(event) => setTitle(event.target.value)}
             required
+            style={{
+              width: "100%",
+              marginTop: "5px",
+              padding: "8px",
+            }}
           />
         </div>
 
-        <div>
-          <label htmlFor="task-description">Description</label>
+        {/* Description */}
+        <div style={{ marginBottom: "15px" }}>
+          <label htmlFor="task-description">
+            <strong>Description</strong>
+          </label>
+          <br />
           <textarea
             id="task-description"
             value={description}
             onChange={(event) => setDescription(event.target.value)}
+            rows="3"
+            style={{
+              width: "100%",
+              marginTop: "5px",
+              padding: "8px",
+            }}
           />
         </div>
 
-        <div>
-          <label htmlFor="task-priority">Priority</label>
+        {/* Priority */}
+        <div style={{ marginBottom: "15px" }}>
+          <label htmlFor="task-priority">
+            <strong>Priority</strong>
+          </label>
+          <br />
           <select
             id="task-priority"
             value={priority}
             onChange={(event) => setPriority(event.target.value)}
+            style={{
+              width: "100%",
+              marginTop: "5px",
+              padding: "8px",
+            }}
           >
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
+            <option value="low">Low 🟢</option>
+            <option value="medium">Medium 🟡</option>
+            <option value="high">High 🔴</option>
           </select>
         </div>
 
-        <div>
-          <label htmlFor="task-due-date">Due Date</label>
+        {/* Due Date */}
+        <div style={{ marginBottom: "20px" }}>
+          <label htmlFor="task-due-date">
+            <strong>Due Date</strong>
+          </label>
+          <br />
           <input
             id="task-due-date"
             type="date"
             value={dueDate}
             onChange={(event) => setDueDate(event.target.value)}
+            style={{
+              width: "100%",
+              marginTop: "5px",
+              padding: "8px",
+            }}
           />
         </div>
 
-        <div>
-          <button type="submit" disabled={loading}>
-            {loading ? "Creating..." : "Create task"}
-          </button>
-        </div>
+        {/* Submit */}
+        <button
+          type="submit"
+          disabled={loading}
+          style={{
+            padding: "10px 18px",
+          }}
+        >
+          {loading ? "Creating..." : "Create Task"}
+        </button>
 
-        {error && <p>{error}</p>}
+        {/* Error */}
+        {error && (
+          <p style={{ marginTop: "15px" }}>
+            {error}
+          </p>
+        )}
       </form>
     </section>
   );
