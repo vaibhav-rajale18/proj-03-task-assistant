@@ -66,10 +66,12 @@ const Tasks = () => {
   };
 
   useEffect(() => {
-    if (!isCreateMode) {
-      fetchTasks();
-    }
-  }, []);
+  const loadTasks = async () => {
+    await fetchTasks();
+  };
+
+  loadTasks();
+}, []);
 
   const totalTasks = tasks.length;
 

@@ -1,7 +1,43 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const navigate = useNavigate();
+
+  const [tasks, setTasks] = useState([]);
+
+  const fetchTasks = async () => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:5000/api/tasks", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setTasks(Array.isArray(data) ? data : []);
+      }
+    } catch (error) {
+      console.error("Dashboard task fetch failed:", error);
+    }
+  };
+
+  useEffect(() => {
+  const loadTasks = async () => {
+    await fetchTasks();
+  };
+
+  loadTasks();
+}, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -16,82 +52,61 @@ const Home = () => {
     navigate("/tasks?create=true");
   };
 
+  const totalTasks = tasks.length;
+
+  const completedTasks = tasks.filter(
+    (task) => task.status === "completed",
+  ).length;
+
+  const pendingTasks = tasks.filter(
+    (task) => task.status !== "completed",
+  ).length;
+
   return (
     <div style={styles.container}>
       <div style={styles.dashboard}>
-        
         {/* Welcome Section */}
         <div style={styles.welcomeSection}>
-          <h1 style={styles.welcomeTitle}>
-            Welcome back 👋
-          </h1>
+          <h1 style={styles.welcomeTitle}>Welcome back 👋</h1>
 
-          <p style={styles.welcomeSubtitle}>
-            Let’s get things done today.
-          </p>
+          <p style={styles.welcomeSubtitle}>Let’s get things done today.</p>
         </div>
 
-        {/* Stats */}
+        {/* Live Stats */}
         <div style={styles.summaryCards}>
-          
           <div style={styles.card}>
-            <h3 style={styles.cardTitle}>
-              Total Tasks
-            </h3>
+            <h3 style={styles.cardTitle}>Total Tasks</h3>
 
-            <p style={styles.cardValue}>
-              25
-            </p>
+            <p style={styles.cardValue}>{totalTasks}</p>
           </div>
 
           <div style={styles.card}>
-            <h3 style={styles.cardTitle}>
-              Pending Tasks
-            </h3>
+            <h3 style={styles.cardTitle}>Pending Tasks</h3>
 
-            <p style={styles.cardValue}>
-              10
-            </p>
+            <p style={styles.cardValue}>{pendingTasks}</p>
           </div>
 
           <div style={styles.card}>
-            <h3 style={styles.cardTitle}>
-              Completed Tasks
-            </h3>
+            <h3 style={styles.cardTitle}>Completed Tasks</h3>
 
-            <p style={styles.cardValue}>
-              15
-            </p>
+            <p style={styles.cardValue}>{completedTasks}</p>
           </div>
-
         </div>
 
         {/* Buttons */}
         <div style={styles.buttons}>
-          
-          <button
-            onClick={handleTasks}
-            style={styles.primaryButton}
-          >
+          <button onClick={handleTasks} style={styles.primaryButton}>
             Go To Tasks
           </button>
 
-          <button
-            onClick={handleCreateTask}
-            style={styles.secondaryButton}
-          >
+          <button onClick={handleCreateTask} style={styles.secondaryButton}>
             Create Task
           </button>
 
-          <button
-            onClick={handleLogout}
-            style={styles.logoutButton}
-          >
+          <button onClick={handleLogout} style={styles.logoutButton}>
             Logout
           </button>
-
         </div>
-
       </div>
     </div>
   );
