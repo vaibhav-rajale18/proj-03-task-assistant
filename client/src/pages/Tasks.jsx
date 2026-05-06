@@ -56,10 +56,57 @@ const Tasks = () => {
     loadTasks();
   }, []);
 
-  return (
-    <main>
-      <TaskForm onTaskCreated={handleTaskCreated} />
+  // Task statistics
+  const totalTasks = tasks.length;
 
+  const completedTasks = tasks.filter(
+    (task) => task.status === "completed"
+  ).length;
+
+  const pendingTasks = tasks.filter(
+    (task) => task.status !== "completed"
+  ).length;
+
+  return (
+    <main style={{ padding: "20px", maxWidth: "900px", margin: "0 auto" }}>
+      
+      {/* Page Header */}
+      <section style={{ marginBottom: "25px" }}>
+        <h1>My Tasks</h1>
+        <p>Stay organized and keep moving.</p>
+      </section>
+
+      {/* Task Summary */}
+      <section
+        style={{
+          display: "flex",
+          gap: "15px",
+          marginBottom: "25px",
+          flexWrap: "wrap",
+        }}
+      >
+        <div style={{ padding: "15px", border: "1px solid #ccc" }}>
+          <h3>Total</h3>
+          <p>{totalTasks}</p>
+        </div>
+
+        <div style={{ padding: "15px", border: "1px solid #ccc" }}>
+          <h3>Pending</h3>
+          <p>{pendingTasks}</p>
+        </div>
+
+        <div style={{ padding: "15px", border: "1px solid #ccc" }}>
+          <h3>Completed</h3>
+          <p>{completedTasks}</p>
+        </div>
+      </section>
+
+      {/* Task Form */}
+      <section style={{ marginBottom: "30px" }}>
+        <TaskForm onTaskCreated={handleTaskCreated} />
+      </section>
+
+      {/* Task Content */}
       {loading ? (
         <p>Loading your tasks...</p>
       ) : error ? (
@@ -67,9 +114,13 @@ const Tasks = () => {
       ) : tasks.length === 0 ? (
         <p>You have no tasks yet. Create your first task 🚀</p>
       ) : (
-        <section>
+        <section style={{ display: "grid", gap: "15px" }}>
           {tasks.map((task) => (
-            <TaskCard key={task._id} task={task} onTaskUpdated={fetchTasks} />
+            <TaskCard
+              key={task._id}
+              task={task}
+              onTaskUpdated={fetchTasks}
+            />
           ))}
         </section>
       )}
