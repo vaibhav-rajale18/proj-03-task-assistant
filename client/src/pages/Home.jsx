@@ -13,7 +13,7 @@ const Home = () => {
   };
 
   const handleCreateTask = () => {
-    navigate("/tasks");
+    navigate("/tasks?create=true");
   };
 
   return (
@@ -66,7 +66,7 @@ const Home = () => {
 
         </div>
 
-        {/* Action Buttons */}
+        {/* Buttons */}
         <div style={styles.buttons}>
           
           <button
@@ -163,7 +163,6 @@ const styles = {
 
   primaryButton: {
     padding: "12px 25px",
-    fontSize: "15px",
     border: "none",
     borderRadius: "6px",
     cursor: "pointer",
@@ -171,7 +170,6 @@ const styles = {
 
   secondaryButton: {
     padding: "12px 25px",
-    fontSize: "15px",
     border: "none",
     borderRadius: "6px",
     cursor: "pointer",
@@ -179,7 +177,6 @@ const styles = {
 
   logoutButton: {
     padding: "12px 25px",
-    fontSize: "15px",
     border: "none",
     borderRadius: "6px",
     cursor: "pointer",
