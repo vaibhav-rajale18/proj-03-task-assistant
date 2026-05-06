@@ -6,10 +6,13 @@ const TaskCard = ({ task, onTaskUpdated }) => {
   const [error, setError] = useState("");
 
   const taskId = task?._id;
+
   const dueDate = task?.dueDate
     ? new Date(task.dueDate).toLocaleDateString()
     : null;
+
   const status = task?.status || "todo";
+  const priority = task?.priority || "low";
 
   const handleComplete = async () => {
     if (!taskId || status === "completed") {
@@ -17,6 +20,7 @@ const TaskCard = ({ task, onTaskUpdated }) => {
     }
 
     const token = localStorage.getItem("token");
+
     if (!token) {
       setError("Authorization token not found. Please log in.");
       return;
@@ -35,10 +39,11 @@ const TaskCard = ({ task, onTaskUpdated }) => {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ status: "completed" }),
-        },
+        }
       );
 
       const data = await response.json();
+
       if (!response.ok) {
         setError(data.error || data.message || "Unable to complete task.");
         return;
@@ -62,6 +67,7 @@ const TaskCard = ({ task, onTaskUpdated }) => {
     }
 
     const token = localStorage.getItem("token");
+
     if (!token) {
       setError("Authorization token not found. Please log in.");
       return;
@@ -78,7 +84,7 @@ const TaskCard = ({ task, onTaskUpdated }) => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        },
+        }
       );
 
       if (!response.ok) {
@@ -98,15 +104,55 @@ const TaskCard = ({ task, onTaskUpdated }) => {
     }
   };
 
-  return (
-    <article>
-      <h3>{task?.title || "Untitled task"}</h3>
-      {task?.description && <p>{task.description}</p>}
-      {task?.priority && <p>Priority: {task.priority}</p>}
-      {dueDate && <p>Due date: {dueDate}</p>}
-      <p>Status: {status === "completed" ? "Completed ✅" : "Todo ⏳"}</p>
+  const getPriorityBadge = () => {
+    if (priority === "high") return "HIGH 🔴";
+    if (priority === "medium") return "MEDIUM 🟡";
+    return "LOW 🟢";
+  };
 
-      <div>
+  const getStatusBadge = () => {
+    if (status === "completed") return "Completed ✅";
+    if (status === "inProgress") return "In Progress 🔄";
+    return "Todo ⏳";
+  };
+
+  return (
+    <article
+      style={{
+        border: "1px solid #ccc",
+        borderRadius: "10px",
+        padding: "20px",
+      }}
+    >
+      <h3 style={{ marginBottom: "10px" }}>
+        {task?.title || "Untitled Task"}
+      </h3>
+
+      {task?.description && (
+        <p style={{ marginBottom: "10px" }}>{task.description}</p>
+      )}
+
+      <p style={{ marginBottom: "8px" }}>
+        <strong>Priority:</strong> {getPriorityBadge()}
+      </p>
+
+      {dueDate && (
+        <p style={{ marginBottom: "8px" }}>
+          <strong>Due:</strong> {dueDate}
+        </p>
+      )}
+
+      <p style={{ marginBottom: "15px" }}>
+        <strong>Status:</strong> {getStatusBadge()}
+      </p>
+
+      <div
+        style={{
+          display: "flex",
+          gap: "10px",
+          flexWrap: "wrap",
+        }}
+      >
         <button
           type="button"
           onClick={handleComplete}
@@ -115,15 +161,24 @@ const TaskCard = ({ task, onTaskUpdated }) => {
           {status === "completed"
             ? "Completed"
             : loadingComplete
-              ? "Updating..."
-              : "Complete Task"}
+            ? "Updating..."
+            : "Complete Task"}
         </button>
-        <button type="button" onClick={handleDelete} disabled={loadingDelete}>
+
+        <button
+          type="button"
+          onClick={handleDelete}
+          disabled={loadingDelete}
+        >
           {loadingDelete ? "Deleting..." : "Delete Task"}
         </button>
       </div>
 
-      {error && <p>{error}</p>}
+      {error && (
+        <p style={{ marginTop: "10px" }}>
+          {error}
+        </p>
+      )}
     </article>
   );
 };
