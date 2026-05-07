@@ -11,6 +11,7 @@ const Tasks = () => {
     new URLSearchParams(location.search).get("create") === "true";
 
   const [tasks, setTasks] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -73,6 +74,10 @@ const Tasks = () => {
     loadTasks();
   }, []);
 
+  const filteredTasks = tasks.filter((task) =>
+    task.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   const totalTasks = tasks.length;
 
   const completedTasks = tasks.filter(
@@ -86,7 +91,7 @@ const Tasks = () => {
   return (
     <div style={styles.container}>
       <div style={styles.dashboard}>
-
+        
         {/* Navigation */}
         <div style={styles.navigation}>
           <button
@@ -124,7 +129,6 @@ const Tasks = () => {
 
             {/* Stats */}
             <div style={styles.summaryCards}>
-              
               <div style={styles.card}>
                 <h3>Total Tasks</h3>
                 <p style={styles.cardValue}>
@@ -145,7 +149,17 @@ const Tasks = () => {
                   {completedTasks}
                 </p>
               </div>
+            </div>
 
+            {/* Search */}
+            <div style={styles.searchContainer}>
+              <input
+                type="text"
+                placeholder="Search tasks..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={styles.searchInput}
+              />
             </div>
 
             {/* Tasks */}
@@ -157,13 +171,13 @@ const Tasks = () => {
               <p style={styles.message}>
                 {error}
               </p>
-            ) : tasks.length === 0 ? (
+            ) : filteredTasks.length === 0 ? (
               <p style={styles.message}>
-                No tasks yet 🚀
+                No matching tasks found 🔍
               </p>
             ) : (
               <div style={styles.taskList}>
-                {tasks.map((task) => (
+                {filteredTasks.map((task) => (
                   <TaskCard
                     key={task._id}
                     task={task}
@@ -235,6 +249,21 @@ const styles = {
     fontSize: "32px",
     fontWeight: "bold",
     marginTop: "10px",
+  },
+
+  searchContainer: {
+    marginBottom: "30px",
+    display: "flex",
+    justifyContent: "center",
+  },
+
+  searchInput: {
+    width: "100%",
+    maxWidth: "500px",
+    padding: "14px",
+    borderRadius: "8px",
+    border: "1px solid #ccc",
+    fontSize: "16px",
   },
 
   button: {
