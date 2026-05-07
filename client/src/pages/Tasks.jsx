@@ -13,6 +13,7 @@ const Tasks = () => {
   const [tasks, setTasks] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [priorityFilter, setPriorityFilter] = useState("all");
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -84,6 +85,11 @@ const Tasks = () => {
       statusFilter === "all"
         ? true
         : task.status === statusFilter
+    )
+    .filter((task) =>
+      priorityFilter === "all"
+        ? true
+        : task.priority === priorityFilter
     );
 
   const totalTasks = tasks.length;
@@ -100,6 +106,7 @@ const Tasks = () => {
     <div style={styles.container}>
       <div style={styles.dashboard}>
         
+        {/* Navigation */}
         <div style={styles.navigation}>
           <button
             onClick={handleBackHome}
@@ -116,12 +123,14 @@ const Tasks = () => {
           </button>
         </div>
 
+        {/* Create Mode */}
         {isCreateMode ? (
           <div style={{ marginTop: "40px" }}>
             <TaskForm onTaskCreated={handleTaskCreated} />
           </div>
         ) : (
           <>
+            {/* Header */}
             <div style={styles.header}>
               <h1 style={styles.title}>
                 My Tasks
@@ -132,6 +141,7 @@ const Tasks = () => {
               </p>
             </div>
 
+            {/* Summary */}
             <div style={styles.summaryCards}>
               <div style={styles.card}>
                 <h3>Total Tasks</h3>
@@ -177,6 +187,20 @@ const Tasks = () => {
                 <option value="todo">Todo</option>
                 <option value="inProgress">In Progress</option>
                 <option value="completed">Completed</option>
+              </select>
+            </div>
+
+            {/* Priority Filter */}
+            <div style={styles.filterContainer}>
+              <select
+                value={priorityFilter}
+                onChange={(e) => setPriorityFilter(e.target.value)}
+                style={styles.filterSelect}
+              >
+                <option value="all">All Priorities</option>
+                <option value="high">High Priority</option>
+                <option value="medium">Medium Priority</option>
+                <option value="low">Low Priority</option>
               </select>
             </div>
 
@@ -286,7 +310,7 @@ const styles = {
   filterContainer: {
     display: "flex",
     justifyContent: "center",
-    marginBottom: "30px",
+    marginBottom: "20px",
   },
 
   filterSelect: {
