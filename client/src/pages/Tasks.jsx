@@ -12,6 +12,8 @@ const Tasks = () => {
 
   const [tasks, setTasks] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -74,9 +76,15 @@ const Tasks = () => {
     loadTasks();
   }, []);
 
-  const filteredTasks = tasks.filter((task) =>
-    task.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredTasks = tasks
+    .filter((task) =>
+      task.title.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .filter((task) =>
+      statusFilter === "all"
+        ? true
+        : task.status === statusFilter
+    );
 
   const totalTasks = tasks.length;
 
@@ -92,7 +100,6 @@ const Tasks = () => {
     <div style={styles.container}>
       <div style={styles.dashboard}>
         
-        {/* Navigation */}
         <div style={styles.navigation}>
           <button
             onClick={handleBackHome}
@@ -109,14 +116,12 @@ const Tasks = () => {
           </button>
         </div>
 
-        {/* CREATE MODE */}
         {isCreateMode ? (
           <div style={{ marginTop: "40px" }}>
             <TaskForm onTaskCreated={handleTaskCreated} />
           </div>
         ) : (
           <>
-            {/* Header */}
             <div style={styles.header}>
               <h1 style={styles.title}>
                 My Tasks
@@ -127,7 +132,6 @@ const Tasks = () => {
               </p>
             </div>
 
-            {/* Stats */}
             <div style={styles.summaryCards}>
               <div style={styles.card}>
                 <h3>Total Tasks</h3>
@@ -162,6 +166,20 @@ const Tasks = () => {
               />
             </div>
 
+            {/* Status Filter */}
+            <div style={styles.filterContainer}>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                style={styles.filterSelect}
+              >
+                <option value="all">All Tasks</option>
+                <option value="todo">Todo</option>
+                <option value="inProgress">In Progress</option>
+                <option value="completed">Completed</option>
+              </select>
+            </div>
+
             {/* Tasks */}
             {loading ? (
               <p style={styles.message}>
@@ -188,7 +206,6 @@ const Tasks = () => {
             )}
           </>
         )}
-
       </div>
     </div>
   );
@@ -252,7 +269,7 @@ const styles = {
   },
 
   searchContainer: {
-    marginBottom: "30px",
+    marginBottom: "20px",
     display: "flex",
     justifyContent: "center",
   },
@@ -264,6 +281,20 @@ const styles = {
     borderRadius: "8px",
     border: "1px solid #ccc",
     fontSize: "16px",
+  },
+
+  filterContainer: {
+    display: "flex",
+    justifyContent: "center",
+    marginBottom: "30px",
+  },
+
+  filterSelect: {
+    padding: "12px",
+    borderRadius: "8px",
+    border: "1px solid #ccc",
+    fontSize: "16px",
+    minWidth: "220px",
   },
 
   button: {
