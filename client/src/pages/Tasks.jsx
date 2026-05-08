@@ -14,6 +14,7 @@ const Tasks = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
+  const [sortOption, setSortOption] = useState("latest");
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -77,7 +78,7 @@ const Tasks = () => {
     loadTasks();
   }, []);
 
-  const filteredTasks = tasks
+  const filteredTasks = [...tasks]
     .filter((task) =>
       task.title.toLowerCase().includes(searchQuery.toLowerCase())
     )
@@ -90,7 +91,35 @@ const Tasks = () => {
       priorityFilter === "all"
         ? true
         : task.priority === priorityFilter
-    );
+    )
+    .sort((a, b) => {
+      if (sortOption === "latest") {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      }
+
+      if (sortOption === "oldest") {
+        return new Date(a.createdAt) - new Date(b.createdAt);
+      }
+
+      if (sortOption === "dueDate") {
+        return new Date(a.dueDate || 0) - new Date(b.dueDate || 0);
+      }
+
+      if (sortOption === "priority") {
+        const priorityOrder = {
+          high: 3,
+          medium: 2,
+          low: 1,
+        };
+
+        return (
+          priorityOrder[b.priority] -
+          priorityOrder[a.priority]
+        );
+      }
+
+      return 0;
+    });
 
   const totalTasks = tasks.length;
 
@@ -201,6 +230,20 @@ const Tasks = () => {
                 <option value="high">High Priority</option>
                 <option value="medium">Medium Priority</option>
                 <option value="low">Low Priority</option>
+              </select>
+            </div>
+
+            {/* Sort */}
+            <div style={styles.filterContainer}>
+              <select
+                value={sortOption}
+                onChange={(e) => setSortOption(e.target.value)}
+                style={styles.filterSelect}
+              >
+                <option value="latest">Latest Created</option>
+                <option value="oldest">Oldest Created</option>
+                <option value="dueDate">Due Date</option>
+                <option value="priority">High Priority First</option>
               </select>
             </div>
 
