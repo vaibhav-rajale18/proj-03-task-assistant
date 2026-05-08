@@ -70,6 +70,13 @@ const Tasks = () => {
     navigate("/login");
   };
 
+  const handleClearFilters = () => {
+    setSearchQuery("");
+    setStatusFilter("all");
+    setPriorityFilter("all");
+    setSortOption("latest");
+  };
+
   useEffect(() => {
     const loadTasks = async () => {
       await fetchTasks();
@@ -247,6 +254,16 @@ const Tasks = () => {
               </select>
             </div>
 
+            {/* Clear Filters */}
+            <div style={styles.filterContainer}>
+              <button
+                onClick={handleClearFilters}
+                style={styles.clearButton}
+              >
+                Clear Filters
+              </button>
+            </div>
+
             {/* Tasks */}
             {loading ? (
               <p style={styles.message}>
@@ -258,7 +275,9 @@ const Tasks = () => {
               </p>
             ) : filteredTasks.length === 0 ? (
               <p style={styles.message}>
-                No matching tasks found 🔍
+                No tasks match your filters 🔍
+                <br />
+                Try adjusting or clearing filters.
               </p>
             ) : (
               <div style={styles.taskList}>
@@ -369,6 +388,16 @@ const styles = {
     border: "none",
     borderRadius: "6px",
     cursor: "pointer",
+  },
+
+  clearButton: {
+    padding: "12px 20px",
+    border: "none",
+    borderRadius: "8px",
+    cursor: "pointer",
+    backgroundColor: "#222",
+    color: "white",
+    fontSize: "15px",
   },
 
   taskList: {
