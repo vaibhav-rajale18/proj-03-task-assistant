@@ -38,8 +38,7 @@ const TaskForm = ({ onTaskCreated }) => {
     try {
       const payload = {
         title: title.trim(),
-        description:
-          description.trim() || undefined,
+        description: description.trim() || undefined,
         priority,
         dueDate: dueDate || undefined,
       };
@@ -49,10 +48,8 @@ const TaskForm = ({ onTaskCreated }) => {
         {
           method: "POST",
           headers: {
-            "Content-Type":
-              "application/json",
-            Authorization:
-              `Bearer ${token}`,
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(payload),
         }
@@ -79,9 +76,11 @@ const TaskForm = ({ onTaskCreated }) => {
 
     } catch (error) {
       console.error(error);
+
       setError(
         "Unable to create task."
       );
+
     } finally {
       setLoading(false);
     }
@@ -106,6 +105,7 @@ const TaskForm = ({ onTaskCreated }) => {
 
       <form onSubmit={handleSubmit}>
         
+        {/* Title */}
         <div style={styles.field}>
           <label style={styles.label}>
             Title *
@@ -114,16 +114,17 @@ const TaskForm = ({ onTaskCreated }) => {
           <input
             type="text"
             value={title}
-            onChange={(event) =>
+            onChange={(e) =>
               setTitle(
-                event.target.value
+                e.target.value
               )
             }
-            required
             style={styles.input}
+            required
           />
         </div>
 
+        {/* Description */}
         <div style={styles.field}>
           <label style={styles.label}>
             Description
@@ -131,16 +132,17 @@ const TaskForm = ({ onTaskCreated }) => {
 
           <textarea
             value={description}
-            onChange={(event) =>
+            onChange={(e) =>
               setDescription(
-                event.target.value
+                e.target.value
               )
             }
-            rows="4"
-            style={styles.input}
+            rows={4}
+            style={styles.textarea}
           />
         </div>
 
+        {/* Priority */}
         <div style={styles.field}>
           <label style={styles.label}>
             Priority
@@ -148,12 +150,12 @@ const TaskForm = ({ onTaskCreated }) => {
 
           <select
             value={priority}
-            onChange={(event) =>
+            onChange={(e) =>
               setPriority(
-                event.target.value
+                e.target.value
               )
             }
-            style={styles.input}
+            style={styles.select}
           >
             <option value="low">
               Low 🟢
@@ -169,6 +171,7 @@ const TaskForm = ({ onTaskCreated }) => {
           </select>
         </div>
 
+        {/* Due Date */}
         <div style={styles.field}>
           <label style={styles.label}>
             Due Date
@@ -177,15 +180,16 @@ const TaskForm = ({ onTaskCreated }) => {
           <input
             type="date"
             value={dueDate}
-            onChange={(event) =>
+            onChange={(e) =>
               setDueDate(
-                event.target.value
+                e.target.value
               )
             }
-            style={styles.input}
+            style={styles.dateInput}
           />
         </div>
 
+        {/* Submit */}
         <button
           type="submit"
           disabled={loading}
@@ -196,6 +200,7 @@ const TaskForm = ({ onTaskCreated }) => {
             : "Create Task"}
         </button>
 
+        {/* Error */}
         {error && (
           <p style={styles.error}>
             {error}
@@ -208,19 +213,27 @@ const TaskForm = ({ onTaskCreated }) => {
   );
 };
 
+const baseInput = {
+  width: "100%",
+  padding: "14px 16px",
+  borderRadius: "12px",
+  border: "1px solid #cbd5e1",
+  fontSize: "15px",
+  boxSizing: "border-box",
+  background: "#ffffff",
+  color: "#0f172a",
+};
+
 const styles = {
   container: {
     background:
-      "rgba(255,255,255,0.85)",
+      "rgba(255,255,255,0.88)",
     borderRadius: "24px",
     padding: "40px",
     maxWidth: "650px",
     margin: "0 auto",
     boxShadow:
       "0 12px 35px rgba(0,0,0,0.08)",
-    border:
-      "1px solid rgba(255,255,255,0.5)",
-    backdropFilter: "blur(10px)",
   },
 
   header: {
@@ -237,59 +250,66 @@ const styles = {
     color: "#2563eb",
     fontWeight: "600",
     marginBottom: "15px",
-    fontSize: "14px",
   },
 
   title: {
     fontSize: "36px",
     fontWeight: "800",
     color: "#0f172a",
-    marginBottom: "12px",
+    marginBottom: "10px",
   },
 
   subtitle: {
     color: "#64748b",
-    fontSize: "17px",
+    fontSize: "16px",
   },
 
   field: {
-    marginBottom: "24px",
+    marginBottom: "22px",
   },
 
   label: {
     display: "block",
-    marginBottom: "10px",
+    marginBottom: "8px",
     fontWeight: "700",
     color: "#334155",
   },
 
-  input: {
-    width: "100%",
-    padding: "16px",
-    borderRadius: "14px",
-    border: "1px solid #cbd5e1",
-    fontSize: "15px",
-    boxSizing: "border-box",
-    outline: "none",
-    background: "white",
+  input: baseInput,
+
+  textarea: {
+    ...baseInput,
+    resize: "vertical",
+  },
+
+  select: {
+    ...baseInput,
+    cursor: "pointer",
+  },
+
+  dateInput: {
+    ...baseInput,
+    cursor: "pointer",
+    appearance: "auto",
+    WebkitAppearance: "auto",
+    colorScheme: "light",
   },
 
   button: {
     width: "100%",
-    padding: "16px",
+    padding: "15px",
     border: "none",
     borderRadius: "14px",
     cursor: "pointer",
-    fontSize: "16px",
     fontWeight: "700",
+    fontSize: "16px",
+    background:
+      "linear-gradient(135deg, #2563eb, #7c3aed)",
     color: "white",
-    background: "#2563eb",
-    boxShadow:
-      "0 8px 20px rgba(37,99,235,0.25)",
   },
 
   error: {
-    marginTop: "20px",
+    marginTop: "18px",
     color: "#dc2626",
     textAlign: "center",
     fontWeight: "600",
