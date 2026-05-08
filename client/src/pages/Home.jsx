@@ -32,12 +32,12 @@ const Home = () => {
   };
 
   useEffect(() => {
-  const loadTasks = async () => {
-    await fetchTasks();
-  };
+    const loadTasks = async () => {
+      await fetchTasks();
+    };
 
-  loadTasks();
-}, []);
+    loadTasks();
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -55,58 +55,97 @@ const Home = () => {
   const totalTasks = tasks.length;
 
   const completedTasks = tasks.filter(
-    (task) => task.status === "completed",
+    (task) => task.status === "completed"
   ).length;
 
   const pendingTasks = tasks.filter(
-    (task) => task.status !== "completed",
+    (task) => task.status !== "completed"
   ).length;
 
   return (
     <div style={styles.container}>
       <div style={styles.dashboard}>
-        {/* Welcome Section */}
-        <div style={styles.welcomeSection}>
-          <h1 style={styles.welcomeTitle}>Welcome back 👋</h1>
 
-          <p style={styles.welcomeSubtitle}>Let’s get things done today.</p>
+        {/* Hero */}
+        <div style={styles.hero}>
+          <p style={styles.badge}>🚀 Personal Productivity Hub</p>
+
+          <h1 style={styles.welcomeTitle}>
+            Welcome back 👋
+          </h1>
+
+          <p style={styles.welcomeSubtitle}>
+            Organize your day. Focus on what matters.
+          </p>
         </div>
 
-        {/* Live Stats */}
+        {/* Stats */}
         <div style={styles.summaryCards}>
-          <div style={styles.card}>
-            <h3 style={styles.cardTitle}>Total Tasks</h3>
 
-            <p style={styles.cardValue}>{totalTasks}</p>
+          <div style={styles.card}>
+            <p style={styles.cardEmoji}>📋</p>
+
+            <h3 style={styles.cardTitle}>
+              Total Tasks
+            </h3>
+
+            <p style={styles.cardValue}>
+              {totalTasks}
+            </p>
           </div>
 
           <div style={styles.card}>
-            <h3 style={styles.cardTitle}>Pending Tasks</h3>
+            <p style={styles.cardEmoji}>⏳</p>
 
-            <p style={styles.cardValue}>{pendingTasks}</p>
+            <h3 style={styles.cardTitle}>
+              Pending
+            </h3>
+
+            <p style={styles.cardValue}>
+              {pendingTasks}
+            </p>
           </div>
 
           <div style={styles.card}>
-            <h3 style={styles.cardTitle}>Completed Tasks</h3>
+            <p style={styles.cardEmoji}>✅</p>
 
-            <p style={styles.cardValue}>{completedTasks}</p>
+            <h3 style={styles.cardTitle}>
+              Completed
+            </h3>
+
+            <p style={styles.cardValue}>
+              {completedTasks}
+            </p>
           </div>
+
         </div>
 
-        {/* Buttons */}
+        {/* Actions */}
         <div style={styles.buttons}>
-          <button onClick={handleTasks} style={styles.primaryButton}>
-            Go To Tasks
+
+          <button
+            onClick={handleTasks}
+            style={styles.primaryButton}
+          >
+            📂 My Tasks
           </button>
 
-          <button onClick={handleCreateTask} style={styles.secondaryButton}>
-            Create Task
+          <button
+            onClick={handleCreateTask}
+            style={styles.secondaryButton}
+          >
+            ➕ Create Task
           </button>
 
-          <button onClick={handleLogout} style={styles.logoutButton}>
+          <button
+            onClick={handleLogout}
+            style={styles.logoutButton}
+          >
             Logout
           </button>
+
         </div>
+
       </div>
     </div>
   );
@@ -115,58 +154,83 @@ const Home = () => {
 const styles = {
   container: {
     minHeight: "100vh",
-    backgroundColor: "#f5f5f5",
-    padding: "30px",
+    padding: "40px",
+    background:
+      "linear-gradient(135deg, #eef2ff 0%, #f8fafc 50%, #e0f2fe 100%)",
   },
 
   dashboard: {
-    maxWidth: "1100px",
+    maxWidth: "1200px",
     margin: "0 auto",
   },
 
-  welcomeSection: {
+  hero: {
     textAlign: "center",
-    marginBottom: "40px",
+    marginBottom: "60px",
+    animation: "fadeIn 0.8s ease-in-out",
+  },
+
+  badge: {
+    display: "inline-block",
+    padding: "10px 18px",
+    background: "rgba(37, 99, 235, 0.1)",
+    color: "#2563eb",
+    borderRadius: "999px",
+    fontWeight: "600",
+    marginBottom: "20px",
+    fontSize: "14px",
   },
 
   welcomeTitle: {
-    fontSize: "38px",
-    marginBottom: "10px",
-    color: "#222",
+    fontSize: "52px",
+    fontWeight: "800",
+    color: "#0f172a",
+    marginBottom: "15px",
+    letterSpacing: "-1px",
   },
 
   welcomeSubtitle: {
-    fontSize: "18px",
-    color: "#666",
+    fontSize: "20px",
+    color: "#475569",
   },
 
   summaryCards: {
     display: "flex",
     justifyContent: "center",
-    gap: "25px",
+    gap: "30px",
     flexWrap: "wrap",
-    marginBottom: "40px",
+    marginBottom: "50px",
   },
 
   card: {
-    backgroundColor: "white",
-    border: "1px solid #ddd",
-    borderRadius: "10px",
-    padding: "25px",
-    minWidth: "200px",
+    width: "240px",
+    padding: "35px",
+    borderRadius: "22px",
+    background: "rgba(255,255,255,0.8)",
+    backdropFilter: "blur(10px)",
+    border: "1px solid rgba(255,255,255,0.4)",
+    boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
     textAlign: "center",
+    transition: "all 0.3s ease",
+    cursor: "pointer",
+  },
+
+  cardEmoji: {
+    fontSize: "28px",
+    marginBottom: "12px",
   },
 
   cardTitle: {
     fontSize: "16px",
-    color: "#666",
-    marginBottom: "10px",
+    color: "#64748b",
+    marginBottom: "12px",
+    fontWeight: "600",
   },
 
   cardValue: {
-    fontSize: "32px",
-    fontWeight: "bold",
-    color: "#222",
+    fontSize: "40px",
+    fontWeight: "800",
+    color: "#0f172a",
   },
 
   buttons: {
@@ -177,24 +241,41 @@ const styles = {
   },
 
   primaryButton: {
-    padding: "12px 25px",
+    padding: "16px 30px",
     border: "none",
-    borderRadius: "6px",
+    borderRadius: "14px",
     cursor: "pointer",
+    background: "#2563eb",
+    color: "white",
+    fontWeight: "700",
+    fontSize: "15px",
+    boxShadow: "0 8px 20px rgba(37,99,235,0.35)",
+    transition: "all 0.3s ease",
   },
 
   secondaryButton: {
-    padding: "12px 25px",
+    padding: "16px 30px",
     border: "none",
-    borderRadius: "6px",
+    borderRadius: "14px",
     cursor: "pointer",
+    background: "#10b981",
+    color: "white",
+    fontWeight: "700",
+    fontSize: "15px",
+    boxShadow: "0 8px 20px rgba(16,185,129,0.35)",
+    transition: "all 0.3s ease",
   },
 
   logoutButton: {
-    padding: "12px 25px",
+    padding: "16px 30px",
     border: "none",
-    borderRadius: "6px",
+    borderRadius: "14px",
     cursor: "pointer",
+    background: "#0f172a",
+    color: "white",
+    fontWeight: "700",
+    fontSize: "15px",
+    transition: "all 0.3s ease",
   },
 };
 
