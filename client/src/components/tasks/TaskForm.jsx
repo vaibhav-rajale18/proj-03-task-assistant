@@ -18,6 +18,7 @@ const TaskForm = ({ onTaskCreated }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
     setError("");
 
     if (!title.trim()) {
@@ -37,7 +38,8 @@ const TaskForm = ({ onTaskCreated }) => {
     try {
       const payload = {
         title: title.trim(),
-        description: description.trim() || undefined,
+        description:
+          description.trim() || undefined,
         priority,
         dueDate: dueDate || undefined,
       };
@@ -47,8 +49,10 @@ const TaskForm = ({ onTaskCreated }) => {
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            "Content-Type":
+              "application/json",
+            Authorization:
+              `Bearer ${token}`,
           },
           body: JSON.stringify(payload),
         }
@@ -57,19 +61,27 @@ const TaskForm = ({ onTaskCreated }) => {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.message || "Unable to create task.");
+        setError(
+          data.message ||
+          "Unable to create task."
+        );
         return;
       }
 
       resetForm();
 
-      if (typeof onTaskCreated === "function") {
+      if (
+        typeof onTaskCreated ===
+        "function"
+      ) {
         onTaskCreated(data);
       }
 
     } catch (error) {
       console.error(error);
-      setError("Unable to create task.");
+      setError(
+        "Unable to create task."
+      );
     } finally {
       setLoading(false);
     }
@@ -78,17 +90,22 @@ const TaskForm = ({ onTaskCreated }) => {
   return (
     <section style={styles.container}>
       
-      <h2 style={styles.title}>
-        Create New Task
-      </h2>
+      <div style={styles.header}>
+        <p style={styles.badge}>
+          ✨ Create Something New
+        </p>
 
-      <p style={styles.subtitle}>
-        Add your next focus item.
-      </p>
+        <h2 style={styles.title}>
+          Create New Task
+        </h2>
+
+        <p style={styles.subtitle}>
+          Add your next focus item.
+        </p>
+      </div>
 
       <form onSubmit={handleSubmit}>
         
-        {/* Title */}
         <div style={styles.field}>
           <label style={styles.label}>
             Title *
@@ -98,14 +115,15 @@ const TaskForm = ({ onTaskCreated }) => {
             type="text"
             value={title}
             onChange={(event) =>
-              setTitle(event.target.value)
+              setTitle(
+                event.target.value
+              )
             }
             required
             style={styles.input}
           />
         </div>
 
-        {/* Description */}
         <div style={styles.field}>
           <label style={styles.label}>
             Description
@@ -114,14 +132,15 @@ const TaskForm = ({ onTaskCreated }) => {
           <textarea
             value={description}
             onChange={(event) =>
-              setDescription(event.target.value)
+              setDescription(
+                event.target.value
+              )
             }
             rows="4"
             style={styles.input}
           />
         </div>
 
-        {/* Priority */}
         <div style={styles.field}>
           <label style={styles.label}>
             Priority
@@ -130,7 +149,9 @@ const TaskForm = ({ onTaskCreated }) => {
           <select
             value={priority}
             onChange={(event) =>
-              setPriority(event.target.value)
+              setPriority(
+                event.target.value
+              )
             }
             style={styles.input}
           >
@@ -148,7 +169,6 @@ const TaskForm = ({ onTaskCreated }) => {
           </select>
         </div>
 
-        {/* Due Date */}
         <div style={styles.field}>
           <label style={styles.label}>
             Due Date
@@ -158,13 +178,14 @@ const TaskForm = ({ onTaskCreated }) => {
             type="date"
             value={dueDate}
             onChange={(event) =>
-              setDueDate(event.target.value)
+              setDueDate(
+                event.target.value
+              )
             }
             style={styles.input}
           />
         </div>
 
-        {/* Submit */}
         <button
           type="submit"
           disabled={loading}
@@ -175,7 +196,6 @@ const TaskForm = ({ onTaskCreated }) => {
             : "Create Task"}
         </button>
 
-        {/* Error */}
         {error && (
           <p style={styles.error}>
             {error}
@@ -190,62 +210,89 @@ const TaskForm = ({ onTaskCreated }) => {
 
 const styles = {
   container: {
-    backgroundColor: "white",
-    border: "1px solid #ddd",
-    borderRadius: "10px",
-    padding: "30px",
-    maxWidth: "550px",
+    background:
+      "rgba(255,255,255,0.85)",
+    borderRadius: "24px",
+    padding: "40px",
+    maxWidth: "650px",
     margin: "0 auto",
+    boxShadow:
+      "0 12px 35px rgba(0,0,0,0.08)",
+    border:
+      "1px solid rgba(255,255,255,0.5)",
+    backdropFilter: "blur(10px)",
+  },
+
+  header: {
+    textAlign: "center",
+    marginBottom: "35px",
+  },
+
+  badge: {
+    display: "inline-block",
+    padding: "8px 16px",
+    borderRadius: "999px",
+    background:
+      "rgba(37,99,235,0.08)",
+    color: "#2563eb",
+    fontWeight: "600",
+    marginBottom: "15px",
+    fontSize: "14px",
   },
 
   title: {
-    fontSize: "30px",
-    color: "#222",
-    marginBottom: "10px",
-    textAlign: "center",
+    fontSize: "36px",
+    fontWeight: "800",
+    color: "#0f172a",
+    marginBottom: "12px",
   },
 
   subtitle: {
-    fontSize: "16px",
-    color: "#666",
-    textAlign: "center",
-    marginBottom: "30px",
+    color: "#64748b",
+    fontSize: "17px",
   },
 
   field: {
-    marginBottom: "20px",
+    marginBottom: "24px",
   },
 
   label: {
     display: "block",
-    marginBottom: "8px",
-    fontWeight: "600",
-    color: "#333",
+    marginBottom: "10px",
+    fontWeight: "700",
+    color: "#334155",
   },
 
   input: {
     width: "100%",
-    padding: "12px",
-    border: "1px solid #ddd",
-    borderRadius: "6px",
+    padding: "16px",
+    borderRadius: "14px",
+    border: "1px solid #cbd5e1",
     fontSize: "15px",
     boxSizing: "border-box",
+    outline: "none",
+    background: "white",
   },
 
   button: {
     width: "100%",
-    padding: "14px",
+    padding: "16px",
     border: "none",
-    borderRadius: "6px",
+    borderRadius: "14px",
     cursor: "pointer",
     fontSize: "16px",
-    fontWeight: "600",
+    fontWeight: "700",
+    color: "white",
+    background: "#2563eb",
+    boxShadow:
+      "0 8px 20px rgba(37,99,235,0.25)",
   },
 
   error: {
-    marginTop: "15px",
-    color: "red",
+    marginTop: "20px",
+    color: "#dc2626",
     textAlign: "center",
+    fontWeight: "600",
   },
 };
 
