@@ -32,25 +32,42 @@ const Tasks = () => {
       setLoading(true);
       setError("");
 
-      const response = await fetch("http://localhost:5000/api/tasks", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        "http://localhost:5000/api/tasks",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.message || "Unable to load tasks.");
+        setError(
+          data.message ||
+          "Unable to load tasks."
+        );
+
         setTasks([]);
       } else {
-        setTasks(Array.isArray(data) ? data : []);
+        setTasks(
+          Array.isArray(data)
+            ? data
+            : []
+        );
       }
+
     } catch (error) {
       console.error(error);
-      setError("Unable to load tasks.");
+
+      setError(
+        "Unable to load tasks."
+      );
+
       setTasks([]);
+
     } finally {
       setLoading(false);
     }
@@ -58,16 +75,8 @@ const Tasks = () => {
 
   const handleTaskCreated = () => {
     fetchTasks();
+
     navigate("/tasks");
-  };
-
-  const handleBackHome = () => {
-    navigate("/");
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/login");
   };
 
   const handleClearFilters = () => {
@@ -87,83 +96,147 @@ const Tasks = () => {
 
   const filteredTasks = [...tasks]
     .filter((task) =>
-      task.title.toLowerCase().includes(searchQuery.toLowerCase())
+      task.title
+        .toLowerCase()
+        .includes(
+          searchQuery.toLowerCase()
+        )
     )
     .filter((task) =>
       statusFilter === "all"
         ? true
-        : task.status === statusFilter
+        : task.status ===
+          statusFilter
     )
     .filter((task) =>
       priorityFilter === "all"
         ? true
-        : task.priority === priorityFilter
+        : task.priority ===
+          priorityFilter
     )
     .sort((a, b) => {
-      if (sortOption === "latest") {
-        return new Date(b.createdAt) - new Date(a.createdAt);
+      if (
+        sortOption === "latest"
+      ) {
+        return (
+          new Date(
+            b.createdAt
+          ) -
+          new Date(
+            a.createdAt
+          )
+        );
       }
 
-      if (sortOption === "oldest") {
-        return new Date(a.createdAt) - new Date(b.createdAt);
+      if (
+        sortOption === "oldest"
+      ) {
+        return (
+          new Date(
+            a.createdAt
+          ) -
+          new Date(
+            b.createdAt
+          )
+        );
       }
 
-      if (sortOption === "dueDate") {
-        return new Date(a.dueDate || 0) - new Date(b.dueDate || 0);
+      if (
+        sortOption === "dueDate"
+      ) {
+        return (
+          new Date(
+            a.dueDate || 0
+          ) -
+          new Date(
+            b.dueDate || 0
+          )
+        );
       }
 
-      if (sortOption === "priority") {
-        const priorityOrder = {
+      if (
+        sortOption === "priority"
+      ) {
+        const order = {
           high: 3,
           medium: 2,
           low: 1,
         };
 
         return (
-          priorityOrder[b.priority] -
-          priorityOrder[a.priority]
+          order[
+            b.priority
+          ] -
+          order[
+            a.priority
+          ]
         );
       }
 
       return 0;
     });
 
-  const totalTasks = tasks.length;
+  const totalTasks =
+    tasks.length;
 
-  const completedTasks = tasks.filter(
-    (task) => task.status === "completed"
-  ).length;
+  const completedTasks =
+    tasks.filter(
+      (task) =>
+        task.status ===
+        "completed"
+    ).length;
 
-  const pendingTasks = tasks.filter(
-    (task) => task.status !== "completed"
-  ).length;
+  const pendingTasks =
+    tasks.filter(
+      (task) =>
+        task.status !==
+        "completed"
+    ).length;
 
   return (
     <div style={styles.container}>
       <div style={styles.dashboard}>
-        
-        {/* Navigation */}
+
+        {/* Top Nav */}
         <div style={styles.navigation}>
+
           <button
-            onClick={handleBackHome}
-            style={styles.button}
+            onClick={() =>
+              navigate("/")
+            }
+            style={
+              styles.navButton
+            }
           >
-            ← Back To Home
+            ← Home
           </button>
 
           <button
-            onClick={handleLogout}
-            style={styles.button}
+            onClick={() => {
+              localStorage.removeItem(
+                "token"
+              );
+
+              navigate(
+                "/login"
+              );
+            }}
+            style={
+              styles.logoutButton
+            }
           >
             Logout
           </button>
+
         </div>
 
         {/* Create Mode */}
         {isCreateMode ? (
-          <div style={{ marginTop: "40px" }}>
-            <TaskForm onTaskCreated={handleTaskCreated} />
-          </div>
+          <TaskForm
+            onTaskCreated={
+              handleTaskCreated
+            }
+          />
         ) : (
           <>
             {/* Header */}
@@ -173,125 +246,214 @@ const Tasks = () => {
               </h1>
 
               <p style={styles.subtitle}>
-                Stay organized and keep moving.
+                Stay focused and execute.
               </p>
             </div>
 
-            {/* Summary */}
+            {/* Stats */}
             <div style={styles.summaryCards}>
+
               <div style={styles.card}>
-                <h3>Total Tasks</h3>
-                <p style={styles.cardValue}>
+                📋
+                <h3>
                   {totalTasks}
+                </h3>
+                <p>
+                  Total
                 </p>
               </div>
 
               <div style={styles.card}>
-                <h3>Pending Tasks</h3>
-                <p style={styles.cardValue}>
+                ⏳
+                <h3>
                   {pendingTasks}
+                </h3>
+                <p>
+                  Pending
                 </p>
               </div>
 
               <div style={styles.card}>
-                <h3>Completed Tasks</h3>
-                <p style={styles.cardValue}>
-                  {completedTasks}
+                ✅
+                <h3>
+                  {
+                    completedTasks
+                  }
+                </h3>
+                <p>
+                  Done
                 </p>
               </div>
+
             </div>
 
-            {/* Search */}
-            <div style={styles.searchContainer}>
+            {/* Filters */}
+            <div style={styles.toolbar}>
+
               <input
                 type="text"
-                placeholder="Search tasks..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                style={styles.searchInput}
+                placeholder="Search..."
+                value={
+                  searchQuery
+                }
+                onChange={(
+                  e
+                ) =>
+                  setSearchQuery(
+                    e.target
+                      .value
+                  )
+                }
+                style={
+                  styles.searchInput
+                }
               />
-            </div>
 
-            {/* Status Filter */}
-            <div style={styles.filterContainer}>
               <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                style={styles.filterSelect}
+                value={
+                  statusFilter
+                }
+                onChange={(
+                  e
+                ) =>
+                  setStatusFilter(
+                    e.target
+                      .value
+                  )
+                }
+                style={
+                  styles.select
+                }
               >
-                <option value="all">All Tasks</option>
-                <option value="todo">Todo</option>
-                <option value="inProgress">In Progress</option>
-                <option value="completed">Completed</option>
-              </select>
-            </div>
+                <option value="all">
+                  Status
+                </option>
 
-            {/* Priority Filter */}
-            <div style={styles.filterContainer}>
+                <option value="todo">
+                  Todo
+                </option>
+
+                <option value="completed">
+                  Done
+                </option>
+              </select>
+
               <select
-                value={priorityFilter}
-                onChange={(e) => setPriorityFilter(e.target.value)}
-                style={styles.filterSelect}
+                value={
+                  priorityFilter
+                }
+                onChange={(
+                  e
+                ) =>
+                  setPriorityFilter(
+                    e.target
+                      .value
+                  )
+                }
+                style={
+                  styles.select
+                }
               >
-                <option value="all">All Priorities</option>
-                <option value="high">High Priority</option>
-                <option value="medium">Medium Priority</option>
-                <option value="low">Low Priority</option>
-              </select>
-            </div>
+                <option value="all">
+                  Priority
+                </option>
 
-            {/* Sort */}
-            <div style={styles.filterContainer}>
+                <option value="high">
+                  High
+                </option>
+
+                <option value="medium">
+                  Medium
+                </option>
+
+                <option value="low">
+                  Low
+                </option>
+              </select>
+
               <select
-                value={sortOption}
-                onChange={(e) => setSortOption(e.target.value)}
-                style={styles.filterSelect}
+                value={
+                  sortOption
+                }
+                onChange={(
+                  e
+                ) =>
+                  setSortOption(
+                    e.target
+                      .value
+                  )
+                }
+                style={
+                  styles.select
+                }
               >
-                <option value="latest">Latest Created</option>
-                <option value="oldest">Oldest Created</option>
-                <option value="dueDate">Due Date</option>
-                <option value="priority">High Priority First</option>
-              </select>
-            </div>
+                <option value="latest">
+                  Latest
+                </option>
 
-            {/* Clear Filters */}
-            <div style={styles.filterContainer}>
+                <option value="oldest">
+                  Oldest
+                </option>
+
+                <option value="dueDate">
+                  Due Date
+                </option>
+
+                <option value="priority">
+                  Priority
+                </option>
+              </select>
+
               <button
-                onClick={handleClearFilters}
-                style={styles.clearButton}
+                onClick={
+                  handleClearFilters
+                }
+                style={
+                  styles.clearButton
+                }
               >
-                Clear Filters
+                Reset
               </button>
+
             </div>
 
             {/* Tasks */}
             {loading ? (
               <p style={styles.message}>
-                Loading your tasks...
+                Loading...
               </p>
             ) : error ? (
               <p style={styles.message}>
                 {error}
               </p>
-            ) : filteredTasks.length === 0 ? (
+            ) : filteredTasks.length ===
+              0 ? (
               <p style={styles.message}>
-                No tasks match your filters 🔍
-                <br />
-                Try adjusting or clearing filters.
+                No tasks found.
               </p>
             ) : (
               <div style={styles.taskList}>
-                {filteredTasks.map((task) => (
-                  <TaskCard
-                    key={task._id}
-                    task={task}
-                    onTaskUpdated={fetchTasks}
-                  />
-                ))}
+                {filteredTasks.map(
+                  (task) => (
+                    <TaskCard
+                      key={
+                        task._id
+                      }
+                      task={
+                        task
+                      }
+                      onTaskUpdated={
+                        fetchTasks
+                      }
+                    />
+                  )
+                )}
               </div>
             )}
+
           </>
         )}
+
       </div>
     </div>
   );
@@ -300,19 +462,41 @@ const Tasks = () => {
 const styles = {
   container: {
     minHeight: "100vh",
-    backgroundColor: "#f5f5f5",
-    padding: "30px",
+    padding: "40px",
+    background:
+      "linear-gradient(135deg, #eef2ff 0%, #f8fafc 50%, #e0f2fe 100%)",
   },
 
   dashboard: {
-    maxWidth: "1100px",
+    maxWidth: "1300px",
     margin: "0 auto",
   },
 
   navigation: {
     display: "flex",
-    justifyContent: "space-between",
-    marginBottom: "30px",
+    justifyContent:
+      "space-between",
+    marginBottom: "40px",
+  },
+
+  navButton: {
+    padding: "14px 24px",
+    border: "none",
+    borderRadius: "12px",
+    background: "#2563eb",
+    color: "white",
+    cursor: "pointer",
+    fontWeight: "700",
+  },
+
+  logoutButton: {
+    padding: "14px 24px",
+    border: "none",
+    borderRadius: "12px",
+    background: "#0f172a",
+    color: "white",
+    cursor: "pointer",
+    fontWeight: "700",
   },
 
   header: {
@@ -321,83 +505,69 @@ const styles = {
   },
 
   title: {
-    fontSize: "38px",
-    color: "#222",
-    marginBottom: "10px",
+    fontSize: "48px",
+    fontWeight: "800",
+    color: "#0f172a",
   },
 
   subtitle: {
+    color: "#64748b",
     fontSize: "18px",
-    color: "#666",
   },
 
   summaryCards: {
     display: "flex",
-    justifyContent: "center",
-    gap: "25px",
+    justifyContent:
+      "center",
+    gap: "20px",
     flexWrap: "wrap",
-    marginBottom: "40px",
+    marginBottom: "35px",
   },
 
   card: {
-    backgroundColor: "white",
-    border: "1px solid #ddd",
-    borderRadius: "10px",
+    width: "180px",
     padding: "25px",
-    minWidth: "200px",
+    borderRadius: "20px",
+    background:
+      "rgba(255,255,255,0.8)",
     textAlign: "center",
+    boxShadow:
+      "0 8px 20px rgba(0,0,0,0.08)",
+    fontSize: "24px",
   },
 
-  cardValue: {
-    fontSize: "32px",
-    fontWeight: "bold",
-    marginTop: "10px",
-  },
-
-  searchContainer: {
-    marginBottom: "20px",
+  toolbar: {
     display: "flex",
-    justifyContent: "center",
+    gap: "15px",
+    flexWrap: "wrap",
+    justifyContent:
+      "center",
+    marginBottom: "40px",
   },
 
   searchInput: {
-    width: "100%",
-    maxWidth: "500px",
     padding: "14px",
-    borderRadius: "8px",
-    border: "1px solid #ccc",
-    fontSize: "16px",
+    borderRadius: "12px",
+    border:
+      "1px solid #cbd5e1",
+    minWidth: "250px",
   },
 
-  filterContainer: {
-    display: "flex",
-    justifyContent: "center",
-    marginBottom: "20px",
-  },
-
-  filterSelect: {
-    padding: "12px",
-    borderRadius: "8px",
-    border: "1px solid #ccc",
-    fontSize: "16px",
-    minWidth: "220px",
-  },
-
-  button: {
-    padding: "12px 25px",
-    border: "none",
-    borderRadius: "6px",
-    cursor: "pointer",
+  select: {
+    padding: "14px",
+    borderRadius: "12px",
+    border:
+      "1px solid #cbd5e1",
   },
 
   clearButton: {
-    padding: "12px 20px",
+    padding: "14px 20px",
     border: "none",
-    borderRadius: "8px",
-    cursor: "pointer",
-    backgroundColor: "#222",
+    borderRadius: "12px",
+    background: "#ef4444",
     color: "white",
-    fontSize: "15px",
+    cursor: "pointer",
+    fontWeight: "700",
   },
 
   taskList: {
@@ -408,7 +578,7 @@ const styles = {
   message: {
     textAlign: "center",
     fontSize: "18px",
-    color: "#666",
+    color: "#64748b",
   },
 };
 
