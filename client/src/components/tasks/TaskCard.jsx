@@ -38,7 +38,9 @@ const TaskCard = ({ task, onTaskUpdated }) => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ status: "completed" }),
+          body: JSON.stringify({
+            status: "completed",
+          }),
         }
       );
 
@@ -94,23 +96,34 @@ const TaskCard = ({ task, onTaskUpdated }) => {
     }
   };
 
-  const getPriorityBadge = () => {
-    if (priority === "high") return "High 🔴";
-    if (priority === "medium") return "Medium 🟡";
-    return "Low 🟢";
+  const getPriorityStyle = () => {
+    if (priority === "high") {
+      return styles.highPriority;
+    }
+
+    if (priority === "medium") {
+      return styles.mediumPriority;
+    }
+
+    return styles.lowPriority;
   };
 
-  const getStatusBadge = () => {
-    if (status === "completed") return "Completed ✅";
-    return "Todo ⏳";
+  const getStatusStyle = () => {
+    if (status === "completed") {
+      return styles.completedStatus;
+    }
+
+    return styles.todoStatus;
   };
 
   return (
     <article style={styles.card}>
       
-      <h3 style={styles.title}>
-        {task?.title || "Untitled Task"}
-      </h3>
+      <div style={styles.topSection}>
+        <h3 style={styles.title}>
+          {task?.title || "Untitled Task"}
+        </h3>
+      </div>
 
       {task?.description && (
         <p style={styles.description}>
@@ -118,42 +131,61 @@ const TaskCard = ({ task, onTaskUpdated }) => {
         </p>
       )}
 
-      <p style={styles.info}>
-        <strong>Priority:</strong> {getPriorityBadge()}
-      </p>
+      <div style={styles.badges}>
+        
+        <span
+          style={{
+            ...styles.badge,
+            ...getPriorityStyle(),
+          }}
+        >
+          {priority.toUpperCase()}
+        </span>
+
+        <span
+          style={{
+            ...styles.badge,
+            ...getStatusStyle(),
+          }}
+        >
+          {status === "completed"
+            ? "DONE"
+            : "TODO"}
+        </span>
+
+      </div>
 
       {dueDate && (
         <p style={styles.info}>
-          <strong>Due:</strong> {dueDate}
+          📅 Due: {dueDate}
         </p>
       )}
-
-      <p style={styles.info}>
-        <strong>Status:</strong> {getStatusBadge()}
-      </p>
 
       <div style={styles.buttons}>
         
         <button
           onClick={handleComplete}
-          disabled={loadingComplete || status === "completed"}
-          style={styles.button}
+          disabled={
+            loadingComplete ||
+            status === "completed"
+          }
+          style={styles.completeButton}
         >
           {status === "completed"
             ? "Completed"
             : loadingComplete
             ? "Updating..."
-            : "Complete Task"}
+            : "Complete"}
         </button>
 
         <button
           onClick={handleDelete}
           disabled={loadingDelete}
-          style={styles.button}
+          style={styles.deleteButton}
         >
           {loadingDelete
             ? "Deleting..."
-            : "Delete Task"}
+            : "Delete"}
         </button>
 
       </div>
@@ -170,47 +202,113 @@ const TaskCard = ({ task, onTaskUpdated }) => {
 
 const styles = {
   card: {
-    backgroundColor: "white",
-    border: "1px solid #ddd",
-    borderRadius: "10px",
-    padding: "25px",
+    background: "rgba(255,255,255,0.85)",
+    borderRadius: "20px",
+    padding: "28px",
+    border: "1px solid rgba(255,255,255,0.5)",
+    boxShadow:
+      "0 8px 25px rgba(0,0,0,0.08)",
+    backdropFilter: "blur(8px)",
+    transition: "all 0.3s ease",
+  },
+
+  topSection: {
+    marginBottom: "15px",
   },
 
   title: {
     fontSize: "24px",
-    color: "#222",
-    marginBottom: "15px",
+    fontWeight: "700",
+    color: "#0f172a",
   },
 
   description: {
     fontSize: "16px",
-    color: "#666",
-    marginBottom: "15px",
+    color: "#64748b",
+    marginBottom: "18px",
+    lineHeight: "1.5",
+  },
+
+  badges: {
+    display: "flex",
+    gap: "10px",
+    flexWrap: "wrap",
+    marginBottom: "18px",
+  },
+
+  badge: {
+    padding: "8px 14px",
+    borderRadius: "999px",
+    fontSize: "13px",
+    fontWeight: "700",
+  },
+
+  highPriority: {
+    background: "#fee2e2",
+    color: "#dc2626",
+  },
+
+  mediumPriority: {
+    background: "#fef3c7",
+    color: "#d97706",
+  },
+
+  lowPriority: {
+    background: "#dcfce7",
+    color: "#16a34a",
+  },
+
+  completedStatus: {
+    background: "#dbeafe",
+    color: "#2563eb",
+  },
+
+  todoStatus: {
+    background: "#e2e8f0",
+    color: "#475569",
   },
 
   info: {
     fontSize: "15px",
-    color: "#444",
-    marginBottom: "10px",
+    color: "#475569",
+    marginBottom: "20px",
+    fontWeight: "500",
   },
 
   buttons: {
     display: "flex",
     gap: "12px",
     flexWrap: "wrap",
-    marginTop: "20px",
   },
 
-  button: {
-    padding: "10px 18px",
+  completeButton: {
+    padding: "12px 20px",
     border: "none",
-    borderRadius: "6px",
+    borderRadius: "12px",
     cursor: "pointer",
+    background: "#2563eb",
+    color: "white",
+    fontWeight: "700",
+    boxShadow:
+      "0 6px 16px rgba(37,99,235,0.25)",
+  },
+
+  deleteButton: {
+    padding: "12px 20px",
+    border: "none",
+    borderRadius: "12px",
+    cursor: "pointer",
+    background: "#ef4444",
+    color: "white",
+    fontWeight: "700",
+    boxShadow:
+      "0 6px 16px rgba(239,68,68,0.25)",
   },
 
   error: {
     marginTop: "15px",
-    color: "red",
+    color: "#dc2626",
+    fontWeight: "500",
   },
 };
 
