@@ -1,185 +1,366 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import {
+  useNavigate,
+  Link,
+} from "react-router-dom";
 
 const Signup = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [name, setName] =
+    useState("");
 
-  const navigate = useNavigate();
+  const [email, setEmail] =
+    useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const [password, setPassword] =
+    useState("");
 
-    try {
-      const res = await fetch("http://localhost:5000/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name, email, password }),
-      });
+  const navigate =
+    useNavigate();
 
-      const data = await res.json();
+  const handleSubmit =
+    async (e) => {
+      e.preventDefault();
 
-      if (res.ok) {
-        localStorage.setItem("token", data.token);
+      try {
+        const res =
+          await fetch(
+            "http://localhost:5000/api/auth/register",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type":
+                  "application/json",
+              },
+              body: JSON.stringify({
+                name,
+                email,
+                password,
+              }),
+            }
+          );
 
-        console.log("Signup successful:", data);
+        const data =
+          await res.json();
 
-        navigate("/");
-      } else {
-        console.log("Signup failed:", data);
+        if (res.ok) {
+          localStorage.setItem(
+            "token",
+            data.token
+          );
+
+          navigate("/");
+        } else {
+          console.log(
+            "Signup failed:",
+            data
+          );
+        }
+
+      } catch (error) {
+        console.log(
+          "Server error:",
+          error
+        );
       }
-    } catch (error) {
-      console.log("Server error:", error);
-    }
-  };
+    };
 
   return (
     <div style={styles.container}>
+      
       <div style={styles.card}>
-        <h1 style={styles.title}>Sign Up</h1>
+        
+        <p style={styles.badge}>
+          ✨ Start Your Journey
+        </p>
 
-        <form onSubmit={handleSubmit} style={styles.form}>
-          <div style={styles.formGroup}>
-            <label htmlFor="name" style={styles.label}>
-              Name:
+        <h1 style={styles.title}>
+          Create Account
+        </h1>
+
+        <p style={styles.subtitle}>
+          Build your productivity system
+        </p>
+
+        <form
+          onSubmit={
+            handleSubmit
+          }
+          style={
+            styles.form
+          }
+        >
+
+          <div
+            style={
+              styles.formGroup
+            }
+          >
+            <label
+              style={
+                styles.label
+              }
+            >
+              Name
             </label>
 
             <input
               type="text"
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={
+                name
+              }
+              onChange={(
+                e
+              ) =>
+                setName(
+                  e.target
+                    .value
+                )
+              }
               placeholder="Enter your name"
               required
-              style={styles.input}
+              style={
+                styles.input
+              }
             />
           </div>
 
-          <div style={styles.formGroup}>
-            <label htmlFor="email" style={styles.label}>
-              Email:
+          <div
+            style={
+              styles.formGroup
+            }
+          >
+            <label
+              style={
+                styles.label
+              }
+            >
+              Email
             </label>
 
             <input
               type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={
+                email
+              }
+              onChange={(
+                e
+              ) =>
+                setEmail(
+                  e.target
+                    .value
+                )
+              }
               placeholder="Enter your email"
               required
-              style={styles.input}
+              style={
+                styles.input
+              }
             />
           </div>
 
-          <div style={styles.formGroup}>
-            <label htmlFor="password" style={styles.label}>
-              Password:
+          <div
+            style={
+              styles.formGroup
+            }
+          >
+            <label
+              style={
+                styles.label
+              }
+            >
+              Password
             </label>
 
             <input
               type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={
+                password
+              }
+              onChange={(
+                e
+              ) =>
+                setPassword(
+                  e.target
+                    .value
+                )
+              }
               placeholder="Enter your password"
               required
-              style={styles.input}
+              style={
+                styles.input
+              }
             />
           </div>
 
-          <button type="submit" style={styles.button}>
+          <button
+            type="submit"
+            style={
+              styles.button
+            }
+          >
             Sign Up
           </button>
 
-          <p style={styles.linkText}>
+          <p
+            style={
+              styles.linkText
+            }
+          >
             Already have an account?{" "}
-            <Link to="/login" style={styles.link}>
+
+            <Link
+              to="/login"
+              style={
+                styles.link
+              }
+            >
               Login
             </Link>
           </p>
+
         </form>
+
       </div>
+
     </div>
   );
 };
 
 const styles = {
   container: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
     minHeight: "100vh",
-    backgroundColor: "#f5f5f5",
+    display: "flex",
+    justifyContent:
+      "center",
+    alignItems:
+      "center",
+    padding: "20px",
+    background:
+      "linear-gradient(135deg, #eef2ff 0%, #f8fafc 50%, #e0f2fe 100%)",
   },
 
   card: {
-    backgroundColor: "white",
-    padding: "40px",
-    borderRadius: "8px",
-    boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
     width: "100%",
-    maxWidth: "400px",
+    maxWidth: "450px",
+    padding: "45px",
+    borderRadius: "24px",
+    background:
+      "rgba(255,255,255,0.85)",
+    backdropFilter:
+      "blur(10px)",
+    boxShadow:
+      "0 12px 35px rgba(0,0,0,0.08)",
+  },
+
+  badge: {
+    display:
+      "inline-block",
+    padding:
+      "8px 16px",
+    borderRadius:
+      "999px",
+    background:
+      "rgba(16,185,129,0.08)",
+    color:
+      "#10b981",
+    fontWeight:
+      "600",
+    fontSize:
+      "14px",
+    marginBottom:
+      "20px",
   },
 
   title: {
-    textAlign: "center",
-    marginBottom: "30px",
-    color: "#333",
-    fontSize: "28px",
+    fontSize:
+      "42px",
+    fontWeight:
+      "800",
+    color:
+      "#0f172a",
+    marginBottom:
+      "10px",
+  },
+
+  subtitle: {
+    color:
+      "#64748b",
+    marginBottom:
+      "35px",
+    fontSize:
+      "16px",
   },
 
   form: {
-    display: "flex",
-    flexDirection: "column",
+    display:
+      "flex",
+    flexDirection:
+      "column",
+    gap: "22px",
   },
 
   formGroup: {
-    marginBottom: "20px",
+    display:
+      "flex",
+    flexDirection:
+      "column",
+    gap: "8px",
   },
 
   label: {
-    display: "block",
-    marginBottom: "8px",
-    color: "#555",
-    fontSize: "14px",
-    fontWeight: "500",
+    fontWeight:
+      "700",
+    color:
+      "#334155",
   },
 
   input: {
-    width: "100%",
-    padding: "10px",
-    borderRadius: "4px",
-    border: "1px solid #ddd",
-    fontSize: "14px",
-    boxSizing: "border-box",
-    fontFamily: "inherit",
+    padding:
+      "14px 16px",
+    borderRadius:
+      "12px",
+    border:
+      "1px solid #cbd5e1",
+    fontSize:
+      "15px",
+    outline:
+      "none",
   },
 
   button: {
-    padding: "12px",
-    backgroundColor: "#007bff",
-    color: "white",
-    border: "none",
-    borderRadius: "4px",
-    fontSize: "16px",
-    fontWeight: "600",
-    cursor: "pointer",
-    marginTop: "10px",
+    width: "100%",
+    padding:
+      "15px",
+    border:
+      "none",
+    borderRadius:
+      "14px",
+    cursor:
+      "pointer",
+    fontWeight:
+      "700",
+    fontSize:
+      "16px",
+    background:
+      "linear-gradient(135deg, #10b981, #2563eb)",
+    color:
+      "white",
   },
 
   linkText: {
-    textAlign: "center",
-    marginTop: "15px",
-    fontSize: "14px",
+    textAlign:
+      "center",
+    color:
+      "#64748b",
   },
 
   link: {
-    color: "#007bff",
-    textDecoration: "none",
-    fontWeight: "600",
+    color:
+      "#2563eb",
+    fontWeight:
+      "700",
+    textDecoration:
+      "none",
   },
 };
 
