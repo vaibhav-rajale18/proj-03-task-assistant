@@ -52,6 +52,10 @@ const Home = () => {
     navigate("/tasks?create=true");
   };
 
+  const handleCalendar = () => {
+    navigate("/calendar");
+  };
+
   const totalTasks = tasks.length;
 
   const completedTasks = tasks.filter(
@@ -138,6 +142,13 @@ const Home = () => {
           </button>
 
           <button
+            onClick={handleCalendar}
+            style={styles.calendarButton}
+          >
+            📅 Calendar
+          </button>
+
+          <button
             onClick={handleLogout}
             style={styles.logoutButton}
           >
@@ -211,7 +222,6 @@ const styles = {
     border: "1px solid rgba(255,255,255,0.4)",
     boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
     textAlign: "center",
-    transition: "all 0.3s ease",
     cursor: "pointer",
   },
 
@@ -249,8 +259,6 @@ const styles = {
     color: "white",
     fontWeight: "700",
     fontSize: "15px",
-    boxShadow: "0 8px 20px rgba(37,99,235,0.35)",
-    transition: "all 0.3s ease",
   },
 
   secondaryButton: {
@@ -262,8 +270,17 @@ const styles = {
     color: "white",
     fontWeight: "700",
     fontSize: "15px",
-    boxShadow: "0 8px 20px rgba(16,185,129,0.35)",
-    transition: "all 0.3s ease",
+  },
+
+  calendarButton: {
+    padding: "16px 30px",
+    border: "none",
+    borderRadius: "14px",
+    cursor: "pointer",
+    background: "#7c3aed",
+    color: "white",
+    fontWeight: "700",
+    fontSize: "15px",
   },
 
   logoutButton: {
@@ -275,7 +292,6 @@ const styles = {
     color: "white",
     fontWeight: "700",
     fontSize: "15px",
-    transition: "all 0.3s ease",
   },
 };
 

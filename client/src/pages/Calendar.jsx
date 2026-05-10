@@ -42,28 +42,25 @@ const Calendar = () => {
   const today = new Date();
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white p-6">
-      <div className="max-w-6xl mx-auto">
+    <div style={styles.container}>
+      <div style={styles.wrapper}>
         
         {/* Header */}
-        <h1 className="text-3xl font-bold mb-8">
+        <h1 style={styles.title}>
           📅 {monthNames[month]} {year}
         </h1>
 
-        {/* Week Header */}
-        <div className="grid grid-cols-7 gap-3 mb-4">
+        {/* Week Names */}
+        <div style={styles.weekHeader}>
           {weekDays.map((day) => (
-            <div
-              key={day}
-              className="text-center font-semibold text-slate-400"
-            >
+            <div key={day} style={styles.weekDay}>
               {day}
             </div>
           ))}
         </div>
 
         {/* Calendar Grid */}
-        <div className="grid grid-cols-7 gap-3">
+        <div style={styles.grid}>
           {calendarCells.map((day, index) => {
             const isToday =
               day &&
@@ -74,24 +71,88 @@ const Calendar = () => {
             return (
               <div
                 key={index}
-                className={`
-                  h-20 rounded-xl border flex items-center justify-center text-lg font-medium
-                  ${
-                    day
-                      ? "border-slate-700 bg-slate-900"
-                      : "border-transparent"
-                  }
-                  ${isToday ? "border-blue-500 bg-blue-950" : ""}
-                `}
+                style={{
+                  ...styles.cell,
+                  ...(isToday ? styles.todayCell : {}),
+                  ...(day === null ? styles.emptyCell : {}),
+                }}
               >
                 {day}
               </div>
             );
           })}
         </div>
+
       </div>
     </div>
   );
+};
+
+const styles = {
+  container: {
+    minHeight: "100vh",
+    padding: "40px",
+    background:
+      "linear-gradient(135deg, #eef2ff 0%, #f8fafc 50%, #e0f2fe 100%)",
+  },
+
+  wrapper: {
+    maxWidth: "1000px",
+    margin: "0 auto",
+  },
+
+  title: {
+    textAlign: "center",
+    fontSize: "42px",
+    fontWeight: "800",
+    marginBottom: "40px",
+    color: "#0f172a",
+  },
+
+  weekHeader: {
+    display: "grid",
+    gridTemplateColumns: "repeat(7, 1fr)",
+    gap: "15px",
+    marginBottom: "20px",
+  },
+
+  weekDay: {
+    textAlign: "center",
+    fontWeight: "700",
+    color: "#475569",
+    fontSize: "16px",
+  },
+
+  grid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(7, 1fr)",
+    gap: "15px",
+  },
+
+  cell: {
+    height: "90px",
+    borderRadius: "18px",
+    background: "rgba(255,255,255,0.8)",
+    border: "1px solid rgba(255,255,255,0.5)",
+    boxShadow: "0 6px 20px rgba(0,0,0,0.08)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    fontSize: "20px",
+    fontWeight: "700",
+    color: "#0f172a",
+  },
+
+  todayCell: {
+    background: "#2563eb",
+    color: "white",
+  },
+
+  emptyCell: {
+    background: "transparent",
+    boxShadow: "none",
+    border: "none",
+  },
 };
 
 export default Calendar;
