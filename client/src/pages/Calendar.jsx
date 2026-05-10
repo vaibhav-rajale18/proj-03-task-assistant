@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const Calendar = () => {
   const [currentDate] = useState(new Date());
+  const [tasks, setTasks] = useState([]);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -23,6 +24,39 @@ const Calendar = () => {
 
   const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
+  // Fetch tasks
+  const fetchTasks = async () => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:5000/api/tasks", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setTasks(Array.isArray(data) ? data : []);
+      }
+    } catch (error) {
+      console.error("Calendar task fetch failed:", error);
+    }
+  };
+
+  useEffect(() => {
+    const loadTasks = async () => {
+      await fetchTasks();
+    };
+
+    loadTasks();
+  }, []);
+
   const firstDayOfMonth = new Date(year, month, 1).getDay();
 
   const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -41,10 +75,27 @@ const Calendar = () => {
 
   const today = new Date();
 
+  // Count tasks for each date
+  const getTaskCountForDay = (day) => {
+    if (!day) return 0;
+
+    return tasks.filter((task) => {
+      if (!task.dueDate) return false;
+
+      const taskDate = new Date(task.dueDate);
+
+      return (
+        taskDate.getDate() === day &&
+        taskDate.getMonth() === month &&
+        taskDate.getFullYear() === year
+      );
+    }).length;
+  };
+
   return (
     <div style={styles.container}>
       <div style={styles.wrapper}>
-        
+
         {/* Header */}
         <h1 style={styles.title}>
           📅 {monthNames[month]} {year}
@@ -68,6 +119,8 @@ const Calendar = () => {
               month === today.getMonth() &&
               year === today.getFullYear();
 
+            const taskCount = getTaskCountForDay(day);
+
             return (
               <div
                 key={index}
@@ -77,7 +130,17 @@ const Calendar = () => {
                   ...(day === null ? styles.emptyCell : {}),
                 }}
               >
-                {day}
+                {day && (
+                  <>
+                    <span>{day}</span>
+
+                    {taskCount > 0 && (
+                      <div style={styles.taskBadge}>
+                        {taskCount}
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
             );
           })}
@@ -138,6 +201,7 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+    position: "relative",
     fontSize: "20px",
     fontWeight: "700",
     color: "#0f172a",
@@ -152,6 +216,22 @@ const styles = {
     background: "transparent",
     boxShadow: "none",
     border: "none",
+  },
+
+  taskBadge: {
+    position: "absolute",
+    top: "8px",
+    right: "8px",
+    width: "26px",
+    height: "26px",
+    borderRadius: "50%",
+    background: "#7c3aed",
+    color: "white",
+    fontSize: "13px",
+    fontWeight: "700",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
   },
 };
 
