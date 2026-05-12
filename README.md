@@ -10,7 +10,7 @@ Built as a real product for personal use + portfolio growth.
 
 Task Assistant is not just a todo app.
 
-It is being built as a **personal productivity operating system** where users can:
+It is being built as a **personal productivity Assistant ** where users can:
 
 - Manage daily work
 - Track deadlines
