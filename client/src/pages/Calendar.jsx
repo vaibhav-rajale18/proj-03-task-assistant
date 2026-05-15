@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 const Calendar = () => {
   const [currentDate] = useState(new Date());
   const [tasks, setTasks] = useState([]);
+  const [selectedDay, setSelectedDay] = useState(null);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -63,19 +64,16 @@ const Calendar = () => {
 
   const calendarCells = [];
 
-  // Empty cells before month starts
   for (let i = 0; i < firstDayOfMonth; i++) {
     calendarCells.push(null);
   }
 
-  // Actual days
   for (let day = 1; day <= daysInMonth; day++) {
     calendarCells.push(day);
   }
 
   const today = new Date();
 
-  // Count tasks for each date
   const getTaskCountForDay = (day) => {
     if (!day) return 0;
 
@@ -91,6 +89,18 @@ const Calendar = () => {
       );
     }).length;
   };
+
+  const selectedDayTasks = tasks.filter((task) => {
+    if (!selectedDay || !task.dueDate) return false;
+
+    const taskDate = new Date(task.dueDate);
+
+    return (
+      taskDate.getDate() === selectedDay &&
+      taskDate.getMonth() === month &&
+      taskDate.getFullYear() === year
+    );
+  });
 
   return (
     <div style={styles.container}>
@@ -119,14 +129,18 @@ const Calendar = () => {
               month === today.getMonth() &&
               year === today.getFullYear();
 
+            const isSelected = day === selectedDay;
+
             const taskCount = getTaskCountForDay(day);
 
             return (
               <div
                 key={index}
+                onClick={() => day && setSelectedDay(day)}
                 style={{
                   ...styles.cell,
                   ...(isToday ? styles.todayCell : {}),
+                  ...(isSelected ? styles.selectedCell : {}),
                   ...(day === null ? styles.emptyCell : {}),
                 }}
               >
@@ -145,6 +159,33 @@ const Calendar = () => {
             );
           })}
         </div>
+
+        {/* Selected Day Tasks */}
+        {selectedDay && (
+          <div style={styles.taskSection}>
+            <h2 style={styles.taskSectionTitle}>
+              Tasks for {monthNames[month]} {selectedDay}
+            </h2>
+
+            {selectedDayTasks.length === 0 ? (
+              <p style={styles.emptyText}>
+                No tasks scheduled for this date 📅
+              </p>
+            ) : (
+              selectedDayTasks.map((task) => (
+                <div key={task._id} style={styles.taskCard}>
+                  <h3>{task.title}</h3>
+
+                  <p>{task.description || "No description"}</p>
+
+                  <small>
+                    Priority: {task.priority}
+                  </small>
+                </div>
+              ))
+            )}
+          </div>
+        )}
 
       </div>
     </div>
@@ -205,6 +246,7 @@ const styles = {
     fontSize: "20px",
     fontWeight: "700",
     color: "#0f172a",
+    cursor: "pointer",
   },
 
   todayCell: {
@@ -212,10 +254,15 @@ const styles = {
     color: "white",
   },
 
+  selectedCell: {
+    border: "2px solid #7c3aed",
+  },
+
   emptyCell: {
     background: "transparent",
     boxShadow: "none",
     border: "none",
+    cursor: "default",
   },
 
   taskBadge: {
@@ -232,6 +279,30 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+  },
+
+  taskSection: {
+    marginTop: "50px",
+  },
+
+  taskSectionTitle: {
+    fontSize: "28px",
+    fontWeight: "700",
+    marginBottom: "25px",
+    color: "#0f172a",
+  },
+
+  taskCard: {
+    background: "white",
+    padding: "20px",
+    borderRadius: "16px",
+    marginBottom: "15px",
+    boxShadow: "0 6px 20px rgba(0,0,0,0.08)",
+  },
+
+  emptyText: {
+    color: "#64748b",
+    fontSize: "16px",
   },
 };
 
