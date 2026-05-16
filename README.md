@@ -14,6 +14,7 @@ It is being built as a **personal productivity Assistant ** where users can:
 
 - Manage daily work
 - Track deadlines
+- Track habits and progress
 - Plan visually using calendar
 - Build consistency
 - Improve execution habits
