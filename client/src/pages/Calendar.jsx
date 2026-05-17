@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 const Calendar = () => {
-  const [currentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState(new Date());
   const [tasks, setTasks] = useState([]);
   const [selectedDay, setSelectedDay] = useState(null);
 
@@ -58,6 +58,22 @@ const Calendar = () => {
     loadTasks();
   }, []);
 
+  const goToPreviousMonth = () => {
+    setSelectedDay(null);
+
+    setCurrentDate(
+      new Date(year, month - 1, 1)
+    );
+  };
+
+  const goToNextMonth = () => {
+    setSelectedDay(null);
+
+    setCurrentDate(
+      new Date(year, month + 1, 1)
+    );
+  };
+
   const firstDayOfMonth = new Date(year, month, 1).getDay();
 
   const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -107,9 +123,25 @@ const Calendar = () => {
       <div style={styles.wrapper}>
 
         {/* Header */}
-        <h1 style={styles.title}>
-          📅 {monthNames[month]} {year}
-        </h1>
+        <div style={styles.header}>
+          <button
+            onClick={goToPreviousMonth}
+            style={styles.navButton}
+          >
+            ←
+          </button>
+
+          <h1 style={styles.title}>
+            📅 {monthNames[month]} {year}
+          </h1>
+
+          <button
+            onClick={goToNextMonth}
+            style={styles.navButton}
+          >
+            →
+          </button>
+        </div>
 
         {/* Week Names */}
         <div style={styles.weekHeader}>
@@ -169,14 +201,16 @@ const Calendar = () => {
 
             {selectedDayTasks.length === 0 ? (
               <p style={styles.emptyText}>
-                No tasks scheduled for this date 📅
+                No tasks planned for this day 📅
               </p>
             ) : (
               selectedDayTasks.map((task) => (
                 <div key={task._id} style={styles.taskCard}>
                   <h3>{task.title}</h3>
 
-                  <p>{task.description || "No description"}</p>
+                  <p>
+                    {task.description || "No description"}
+                  </p>
 
                   <small>
                     Priority: {task.priority}
@@ -205,12 +239,29 @@ const styles = {
     margin: "0 auto",
   },
 
+  header: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "40px",
+  },
+
   title: {
-    textAlign: "center",
     fontSize: "42px",
     fontWeight: "800",
-    marginBottom: "40px",
     color: "#0f172a",
+  },
+
+  navButton: {
+    width: "55px",
+    height: "55px",
+    border: "none",
+    borderRadius: "16px",
+    background: "#7c3aed",
+    color: "white",
+    fontSize: "22px",
+    fontWeight: "700",
+    cursor: "pointer",
   },
 
   weekHeader: {
