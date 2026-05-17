@@ -2,7 +2,14 @@ const Task = require("../models/Task");
 
 const createTask = async (req, res) => {
   try {
-    const { title, description, priority, dueDate } = req.body;
+    const {
+      title,
+      description,
+      priority,
+      dueDate,
+      isRecurring,
+      recurrence,
+    } = req.body;
 
     const task = new Task({
       title,
@@ -10,13 +17,19 @@ const createTask = async (req, res) => {
       priority,
       dueDate,
       user: req.user.userId,
+
+      // Recurring task fields
+      isRecurring: isRecurring || false,
+      recurrence: isRecurring ? recurrence : undefined,
     });
 
     await task.save();
 
     res.status(201).json(task);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      error: error.message,
+    });
   }
 };
 
@@ -28,7 +41,9 @@ const getTasks = async (req, res) => {
 
     res.json(tasks);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      error: error.message,
+    });
   }
 };
 
