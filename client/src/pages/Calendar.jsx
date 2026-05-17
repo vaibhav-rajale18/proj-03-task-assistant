@@ -9,29 +9,17 @@ const Calendar = () => {
   const month = currentDate.getMonth();
 
   const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
+    "January", "February", "March", "April",
+    "May", "June", "July", "August",
+    "September", "October", "November", "December"
   ];
 
   const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-  // Fetch tasks
   const fetchTasks = async () => {
     const token = localStorage.getItem("token");
 
-    if (!token) {
-      return;
-    }
+    if (!token) return;
 
     try {
       const response = await fetch("http://localhost:5000/api/tasks", {
@@ -71,6 +59,14 @@ const Calendar = () => {
 
     setCurrentDate(
       new Date(year, month + 1, 1)
+    );
+  };
+
+  const goToToday = () => {
+    setSelectedDay(null);
+
+    setCurrentDate(
+      new Date()
     );
   };
 
@@ -131,9 +127,18 @@ const Calendar = () => {
             ←
           </button>
 
-          <h1 style={styles.title}>
-            📅 {monthNames[month]} {year}
-          </h1>
+          <div style={styles.titleSection}>
+            <h1 style={styles.title}>
+              📅 {monthNames[month]} {year}
+            </h1>
+
+            <button
+              onClick={goToToday}
+              style={styles.todayButton}
+            >
+              Today
+            </button>
+          </div>
 
           <button
             onClick={goToNextMonth}
@@ -246,10 +251,15 @@ const styles = {
     marginBottom: "40px",
   },
 
+  titleSection: {
+    textAlign: "center",
+  },
+
   title: {
     fontSize: "42px",
     fontWeight: "800",
     color: "#0f172a",
+    marginBottom: "10px",
   },
 
   navButton: {
@@ -260,6 +270,16 @@ const styles = {
     background: "#7c3aed",
     color: "white",
     fontSize: "22px",
+    fontWeight: "700",
+    cursor: "pointer",
+  },
+
+  todayButton: {
+    padding: "8px 18px",
+    border: "none",
+    borderRadius: "12px",
+    background: "#2563eb",
+    color: "white",
     fontWeight: "700",
     cursor: "pointer",
   },
