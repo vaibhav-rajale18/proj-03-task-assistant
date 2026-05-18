@@ -106,15 +106,7 @@ Dashboard shows:
 ✔ Calendar Navigation  
 ✔ Task Count per Date  
 
-Example:
 
-12 → 2 tasks  
-18 → 4 tasks  
-25 → 1 task  
-
-Calendar now acts as a visual workload planner.
-
----
 
 
 # 🔜 Upcoming Features
