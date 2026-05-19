@@ -83,13 +83,7 @@ Task fields:
 ✔ Responsive Layout  
 ✔ Better UX Navigation  
 
-Dashboard shows:
 
-- Total Tasks
-- Pending Tasks
-- Completed Tasks
-
----
 
 ## 🧠 Smart Productivity Features
 ✔ Real-time Task Search  
