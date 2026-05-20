@@ -1,44 +1,78 @@
 import { useEffect, useState } from "react";
 
 const Calendar = () => {
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] =
+    useState(new Date());
+
   const [tasks, setTasks] = useState([]);
-  const [selectedDay, setSelectedDay] = useState(null);
+
+  const [selectedDay, setSelectedDay] =
+    useState(null);
 
   const year = currentDate.getFullYear();
+
   const month = currentDate.getMonth();
 
   const monthNames = [
-    "January", "February", "March", "April",
-    "May", "June", "July", "August",
-    "September", "October", "November", "December"
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
 
-  const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const weekDays = [
+    "Sun",
+    "Mon",
+    "Tue",
+    "Wed",
+    "Thu",
+    "Fri",
+    "Sat",
+  ];
 
   const fetchTasks = async () => {
-    const token = localStorage.getItem("token");
+    const token =
+      localStorage.getItem("token");
 
     if (!token) return;
 
     try {
-      const response = await fetch("http://localhost:5000/api/tasks", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        "http://localhost:5000/api/tasks",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       const data = await response.json();
 
       if (response.ok) {
-        setTasks(Array.isArray(data) ? data : []);
+        setTasks(
+          Array.isArray(data)
+            ? data
+            : []
+        );
       }
+
     } catch (error) {
-      console.error("Calendar task fetch failed:", error);
+      console.error(
+        "Calendar task fetch failed:",
+        error
+      );
     }
   };
 
-  useEffect(() => {
+ useEffect(() => {
     const loadTasks = async () => {
       await fetchTasks();
     };
@@ -65,54 +99,211 @@ const Calendar = () => {
   const goToToday = () => {
     setSelectedDay(null);
 
-    setCurrentDate(
-      new Date()
-    );
+    setCurrentDate(new Date());
   };
 
-  const firstDayOfMonth = new Date(year, month, 1).getDay();
+  const firstDayOfMonth = new Date(
+    year,
+    month,
+    1
+  ).getDay();
 
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const daysInMonth = new Date(
+    year,
+    month + 1,
+    0
+  ).getDate();
 
   const calendarCells = [];
 
-  for (let i = 0; i < firstDayOfMonth; i++) {
+  for (
+    let i = 0;
+    i < firstDayOfMonth;
+    i++
+  ) {
     calendarCells.push(null);
   }
 
-  for (let day = 1; day <= daysInMonth; day++) {
+  for (
+    let day = 1;
+    day <= daysInMonth;
+    day++
+  ) {
     calendarCells.push(day);
   }
 
   const today = new Date();
 
-  const getTaskCountForDay = (day) => {
-    if (!day) return 0;
+  const weekDayNames = [
+    "Sun",
+    "Mon",
+    "Tue",
+    "Wed",
+    "Thu",
+    "Fri",
+    "Sat",
+  ];
 
-    return tasks.filter((task) => {
-      if (!task.dueDate) return false;
+  const isRecurringTaskForDate = (
+    task,
+    targetDate
+  ) => {
 
-      const taskDate = new Date(task.dueDate);
+    if (
+      !task.isRecurring ||
+      !task.recurrence
+    ) {
+      return false;
+    }
+
+    const createdDate = new Date(
+      task.createdAt
+    );
+
+    // Prevent backward recurrence
+    if (targetDate < createdDate) {
+      return false;
+    }
+
+    // Daily
+    if (
+      task.recurrence.type ===
+      "daily"
+    ) {
+      return true;
+    }
+
+    // Weekly
+    if (
+      task.recurrence.type ===
+      "weekly"
+    ) {
+      return (
+        targetDate.getDay() ===
+        createdDate.getDay()
+      );
+    }
+
+    // Custom weekdays
+    if (
+      task.recurrence.type ===
+      "custom"
+    ) {
+      const currentWeekday =
+        weekDayNames[
+          targetDate.getDay()
+        ];
 
       return (
-        taskDate.getDate() === day &&
-        taskDate.getMonth() === month &&
-        taskDate.getFullYear() === year
+        task.recurrence.weekdays?.includes(
+          currentWeekday
+        )
       );
-    }).length;
+    }
+
+    return false;
   };
 
-  const selectedDayTasks = tasks.filter((task) => {
-    if (!selectedDay || !task.dueDate) return false;
+  const getTaskCountsForDay = (day) => {
 
-    const taskDate = new Date(task.dueDate);
+    if (!day) {
+      return {
+        normal: 0,
+        recurring: 0,
+      };
+    }
 
-    return (
-      taskDate.getDate() === selectedDay &&
-      taskDate.getMonth() === month &&
-      taskDate.getFullYear() === year
-    );
-  });
+    const currentCellDate =
+      new Date(year, month, day);
+
+    let normalCount = 0;
+
+    let recurringCount = 0;
+
+    tasks.forEach((task) => {
+
+      // Normal tasks
+      if (
+        task.dueDate &&
+        !task.isRecurring
+      ) {
+        const taskDate = new Date(
+          task.dueDate
+        );
+
+        const sameDate =
+          taskDate.getDate() === day &&
+          taskDate.getMonth() ===
+            month &&
+          taskDate.getFullYear() ===
+            year;
+
+        if (sameDate) {
+          normalCount++;
+        }
+      }
+
+      // Recurring tasks
+      if (
+        isRecurringTaskForDate(
+          task,
+          currentCellDate
+        )
+      ) {
+        recurringCount++;
+      }
+
+    });
+
+    return {
+      normal: normalCount,
+      recurring: recurringCount,
+    };
+  };
+
+  const selectedDayTasks =
+    tasks.filter((task) => {
+
+      if (!selectedDay) {
+        return false;
+      }
+
+      const selectedDate =
+        new Date(
+          year,
+          month,
+          selectedDay
+        );
+
+      // Normal task
+      if (
+        task.dueDate &&
+        !task.isRecurring
+      ) {
+        const taskDate = new Date(
+          task.dueDate
+        );
+
+        const sameDate =
+          taskDate.getDate() ===
+            selectedDay &&
+          taskDate.getMonth() ===
+            month &&
+          taskDate.getFullYear() ===
+            year;
+
+        if (sameDate) {
+          return true;
+        }
+      }
+
+      // Recurring task
+      return isRecurringTaskForDate(
+        task,
+        selectedDate
+      );
+
+    });
 
   return (
     <div style={styles.container}>
@@ -120,6 +311,7 @@ const Calendar = () => {
 
         {/* Header */}
         <div style={styles.header}>
+
           <button
             onClick={goToPreviousMonth}
             style={styles.navButton}
@@ -129,7 +321,8 @@ const Calendar = () => {
 
           <div style={styles.titleSection}>
             <h1 style={styles.title}>
-              📅 {monthNames[month]} {year}
+              📅 {monthNames[month]}{" "}
+              {year}
             </h1>
 
             <button
@@ -146,12 +339,16 @@ const Calendar = () => {
           >
             →
           </button>
+
         </div>
 
         {/* Week Names */}
         <div style={styles.weekHeader}>
           {weekDays.map((day) => (
-            <div key={day} style={styles.weekDay}>
+            <div
+              key={day}
+              style={styles.weekDay}
+            >
               {day}
             </div>
           ))}
@@ -159,70 +356,150 @@ const Calendar = () => {
 
         {/* Calendar Grid */}
         <div style={styles.grid}>
-          {calendarCells.map((day, index) => {
-            const isToday =
-              day &&
-              day === today.getDate() &&
-              month === today.getMonth() &&
-              year === today.getFullYear();
 
-            const isSelected = day === selectedDay;
+          {calendarCells.map(
+            (day, index) => {
 
-            const taskCount = getTaskCountForDay(day);
+              const isToday =
+                day &&
+                day === today.getDate() &&
+                month ===
+                  today.getMonth() &&
+                year ===
+                  today.getFullYear();
 
-            return (
-              <div
-                key={index}
-                onClick={() => day && setSelectedDay(day)}
-                style={{
-                  ...styles.cell,
-                  ...(isToday ? styles.todayCell : {}),
-                  ...(isSelected ? styles.selectedCell : {}),
-                  ...(day === null ? styles.emptyCell : {}),
-                }}
-              >
-                {day && (
-                  <>
-                    <span>{day}</span>
+              const isSelected =
+                day === selectedDay;
 
-                    {taskCount > 0 && (
-                      <div style={styles.taskBadge}>
-                        {taskCount}
+              const taskCounts =
+                getTaskCountsForDay(day);
+
+              return (
+                <div
+                  key={index}
+                  onClick={() =>
+                    day &&
+                    setSelectedDay(day)
+                  }
+                  style={{
+                    ...styles.cell,
+                    ...(isToday
+                      ? styles.todayCell
+                      : {}),
+                    ...(isSelected
+                      ? styles.selectedCell
+                      : {}),
+                    ...(day === null
+                      ? styles.emptyCell
+                      : {}),
+                  }}
+                >
+
+                  {day && (
+                    <>
+                      <span>{day}</span>
+
+                      <div
+                        style={
+                          styles.badgeContainer
+                        }
+                      >
+
+                        {/* Normal tasks */}
+                        {taskCounts.normal >
+                          0 && (
+                          <div
+                            style={
+                              styles.normalBadge
+                            }
+                          >
+                            {
+                              taskCounts.normal
+                            }
+                          </div>
+                        )}
+
+                        {/* Recurring tasks */}
+                        {taskCounts.recurring >
+                          0 && (
+                          <div
+                            style={
+                              styles.recurringBadge
+                            }
+                          >
+                            {
+                              taskCounts.recurring
+                            }
+                          </div>
+                        )}
+
                       </div>
-                    )}
-                  </>
-                )}
-              </div>
-            );
-          })}
+                    </>
+                  )}
+
+                </div>
+              );
+            }
+          )}
+
         </div>
 
         {/* Selected Day Tasks */}
         {selectedDay && (
           <div style={styles.taskSection}>
-            <h2 style={styles.taskSectionTitle}>
-              Tasks for {monthNames[month]} {selectedDay}
+
+            <h2
+              style={
+                styles.taskSectionTitle
+              }
+            >
+              Tasks for{" "}
+              {monthNames[month]}{" "}
+              {selectedDay}
             </h2>
 
-            {selectedDayTasks.length === 0 ? (
+            {selectedDayTasks.length ===
+            0 ? (
               <p style={styles.emptyText}>
-                No tasks planned for this day 📅
+                No tasks planned for
+                this day 📅
               </p>
             ) : (
-              selectedDayTasks.map((task) => (
-                <div key={task._id} style={styles.taskCard}>
-                  <h3>{task.title}</h3>
+              selectedDayTasks.map(
+                (task) => (
+                  <div
+                    key={task._id}
+                    style={styles.taskCard}
+                  >
+                    <h3>
+                      {task.title}
+                    </h3>
 
-                  <p>
-                    {task.description || "No description"}
-                  </p>
+                    <p>
+                      {task.description ||
+                        "No description"}
+                    </p>
 
-                  <small>
-                    Priority: {task.priority}
-                  </small>
-                </div>
-              ))
+                    <small>
+                      Priority:{" "}
+                      {task.priority}
+                    </small>
+
+                    {task.isRecurring && (
+                      <p
+                        style={
+                          styles.recurringText
+                        }
+                      >
+                        🔁 Recurring Task
+                      </p>
+                    )}
+
+                  </div>
+                )
+              )
             )}
+
           </div>
         )}
 
@@ -286,7 +563,8 @@ const styles = {
 
   weekHeader: {
     display: "grid",
-    gridTemplateColumns: "repeat(7, 1fr)",
+    gridTemplateColumns:
+      "repeat(7, 1fr)",
     gap: "15px",
     marginBottom: "20px",
   },
@@ -300,16 +578,20 @@ const styles = {
 
   grid: {
     display: "grid",
-    gridTemplateColumns: "repeat(7, 1fr)",
+    gridTemplateColumns:
+      "repeat(7, 1fr)",
     gap: "15px",
   },
 
   cell: {
     height: "90px",
     borderRadius: "18px",
-    background: "rgba(255,255,255,0.8)",
-    border: "1px solid rgba(255,255,255,0.5)",
-    boxShadow: "0 6px 20px rgba(0,0,0,0.08)",
+    background:
+      "rgba(255,255,255,0.8)",
+    border:
+      "1px solid rgba(255,255,255,0.5)",
+    boxShadow:
+      "0 6px 20px rgba(0,0,0,0.08)",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -336,16 +618,34 @@ const styles = {
     cursor: "default",
   },
 
-  taskBadge: {
+  badgeContainer: {
     position: "absolute",
     top: "8px",
     right: "8px",
-    width: "26px",
-    height: "26px",
+    display: "flex",
+    gap: "6px",
+  },
+
+  normalBadge: {
+    width: "24px",
+    height: "24px",
     borderRadius: "50%",
     background: "#7c3aed",
     color: "white",
-    fontSize: "13px",
+    fontSize: "12px",
+    fontWeight: "700",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  recurringBadge: {
+    width: "24px",
+    height: "24px",
+    borderRadius: "6px",
+    background: "#a855f7",
+    color: "white",
+    fontSize: "12px",
     fontWeight: "700",
     display: "flex",
     justifyContent: "center",
@@ -368,7 +668,14 @@ const styles = {
     padding: "20px",
     borderRadius: "16px",
     marginBottom: "15px",
-    boxShadow: "0 6px 20px rgba(0,0,0,0.08)",
+    boxShadow:
+      "0 6px 20px rgba(0,0,0,0.08)",
+  },
+
+  recurringText: {
+    marginTop: "10px",
+    color: "#7c3aed",
+    fontWeight: "700",
   },
 
   emptyText: {
