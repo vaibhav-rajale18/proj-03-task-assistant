@@ -1,10 +1,28 @@
 import { useState } from "react";
 
+const weekdaysList = [
+  "Mon",
+  "Tue",
+  "Wed",
+  "Thu",
+  "Fri",
+  "Sat",
+  "Sun",
+];
+
 const TaskForm = ({ onTaskCreated }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState("low");
   const [dueDate, setDueDate] = useState("");
+
+  // Recurring task states
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [recurrenceType, setRecurrenceType] =
+    useState("daily");
+  const [selectedWeekdays, setSelectedWeekdays] =
+    useState([]);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -13,7 +31,27 @@ const TaskForm = ({ onTaskCreated }) => {
     setDescription("");
     setPriority("low");
     setDueDate("");
+
+    setIsRecurring(false);
+    setRecurrenceType("daily");
+    setSelectedWeekdays([]);
+
     setError("");
+  };
+
+  const toggleWeekday = (day) => {
+    if (selectedWeekdays.includes(day)) {
+      setSelectedWeekdays(
+        selectedWeekdays.filter(
+          (item) => item !== day
+        )
+      );
+    } else {
+      setSelectedWeekdays([
+        ...selectedWeekdays,
+        day,
+      ]);
+    }
   };
 
   const handleSubmit = async (event) => {
@@ -38,17 +76,33 @@ const TaskForm = ({ onTaskCreated }) => {
     try {
       const payload = {
         title: title.trim(),
-        description: description.trim() || undefined,
+        description:
+          description.trim() || undefined,
         priority,
         dueDate: dueDate || undefined,
+
+        // Recurrence payload
+        isRecurring,
       };
+
+      if (isRecurring) {
+        payload.recurrence = {
+          type: recurrenceType,
+        };
+
+        if (recurrenceType === "custom") {
+          payload.recurrence.weekdays =
+            selectedWeekdays;
+        }
+      }
 
       const response = await fetch(
         "http://localhost:5000/api/tasks",
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type":
+              "application/json",
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(payload),
@@ -60,7 +114,7 @@ const TaskForm = ({ onTaskCreated }) => {
       if (!response.ok) {
         setError(
           data.message ||
-          "Unable to create task."
+            "Unable to create task."
         );
         return;
       }
@@ -88,7 +142,7 @@ const TaskForm = ({ onTaskCreated }) => {
 
   return (
     <section style={styles.container}>
-      
+
       <div style={styles.header}>
         <p style={styles.badge}>
           ✨ Create Something New
@@ -104,7 +158,7 @@ const TaskForm = ({ onTaskCreated }) => {
       </div>
 
       <form onSubmit={handleSubmit}>
-        
+
         {/* Title */}
         <div style={styles.field}>
           <label style={styles.label}>
@@ -115,9 +169,7 @@ const TaskForm = ({ onTaskCreated }) => {
             type="text"
             value={title}
             onChange={(e) =>
-              setTitle(
-                e.target.value
-              )
+              setTitle(e.target.value)
             }
             style={styles.input}
             required
@@ -188,6 +240,105 @@ const TaskForm = ({ onTaskCreated }) => {
             style={styles.dateInput}
           />
         </div>
+
+        {/* Recurring Toggle */}
+        <div style={styles.field}>
+          <label style={styles.checkboxRow}>
+            <input
+              type="checkbox"
+              checked={isRecurring}
+              onChange={(e) =>
+                setIsRecurring(
+                  e.target.checked
+                )
+              }
+            />
+
+            <span>
+              🔁 Repeat Task
+            </span>
+          </label>
+        </div>
+
+        {/* Recurrence Options */}
+        {isRecurring && (
+          <>
+            <div style={styles.field}>
+              <label style={styles.label}>
+                Recurrence Type
+              </label>
+
+              <select
+                value={recurrenceType}
+                onChange={(e) =>
+                  setRecurrenceType(
+                    e.target.value
+                  )
+                }
+                style={styles.select}
+              >
+                <option value="daily">
+                  Daily
+                </option>
+
+                <option value="weekly">
+                  Weekly
+                </option>
+
+                <option value="custom">
+                  Custom Weekdays
+                </option>
+              </select>
+            </div>
+
+            {/* Custom Weekdays */}
+            {recurrenceType ===
+              "custom" && (
+              <div style={styles.field}>
+                <label
+                  style={styles.label}
+                >
+                  Select Days
+                </label>
+
+                <div
+                  style={
+                    styles.weekdayContainer
+                  }
+                >
+                  {weekdaysList.map(
+                    (day) => (
+                      <button
+                        type="button"
+                        key={day}
+                        onClick={() =>
+                          toggleWeekday(day)
+                        }
+                        style={{
+                          ...styles.weekdayButton,
+                          background:
+                            selectedWeekdays.includes(
+                              day
+                            )
+                              ? "#2563eb"
+                              : "#e2e8f0",
+                          color:
+                            selectedWeekdays.includes(
+                              day
+                            )
+                              ? "#fff"
+                              : "#0f172a",
+                        }}
+                      >
+                        {day}
+                      </button>
+                    )
+                  )}
+                </div>
+              </div>
+            )}
+          </>
+        )}
 
         {/* Submit */}
         <button
@@ -293,6 +444,29 @@ const styles = {
     appearance: "auto",
     WebkitAppearance: "auto",
     colorScheme: "light",
+  },
+
+  checkboxRow: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    fontWeight: "700",
+    color: "#334155",
+  },
+
+  weekdayContainer: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "10px",
+    marginTop: "10px",
+  },
+
+  weekdayButton: {
+    border: "none",
+    padding: "10px 14px",
+    borderRadius: "10px",
+    cursor: "pointer",
+    fontWeight: "700",
   },
 
   button: {
