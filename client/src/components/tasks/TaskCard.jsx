@@ -14,6 +14,10 @@ const TaskCard = ({ task, onTaskUpdated }) => {
   const status = task?.status || "todo";
   const priority = task?.priority || "low";
 
+  // Recurrence data
+  const isRecurring = task?.isRecurring;
+  const recurrence = task?.recurrence;
+
   const handleComplete = async () => {
     if (!taskId || status === "completed") {
       return;
@@ -47,14 +51,22 @@ const TaskCard = ({ task, onTaskUpdated }) => {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.message || "Unable to complete task.");
+        setError(
+          data.message ||
+            "Unable to complete task."
+        );
         return;
       }
 
       onTaskUpdated(data);
+
     } catch (error) {
       console.error(error);
-      setError("Unable to complete task.");
+
+      setError(
+        "Unable to complete task."
+      );
+
     } finally {
       setLoadingComplete(false);
     }
@@ -83,14 +95,21 @@ const TaskCard = ({ task, onTaskUpdated }) => {
       );
 
       if (!response.ok) {
-        setError("Unable to delete task.");
+        setError(
+          "Unable to delete task."
+        );
         return;
       }
 
       onTaskUpdated();
+
     } catch (error) {
       console.error(error);
-      setError("Unable to delete task.");
+
+      setError(
+        "Unable to delete task."
+      );
+
     } finally {
       setLoadingDelete(false);
     }
@@ -116,12 +135,38 @@ const TaskCard = ({ task, onTaskUpdated }) => {
     return styles.todoStatus;
   };
 
+  const getRecurringLabel = () => {
+    if (!isRecurring || !recurrence) {
+      return null;
+    }
+
+    if (recurrence.type === "daily") {
+      return "🔁 Daily";
+    }
+
+    if (recurrence.type === "weekly") {
+      return "🔁 Weekly";
+    }
+
+    if (
+      recurrence.type === "custom" &&
+      recurrence.weekdays?.length
+    ) {
+      return `🔁 ${recurrence.weekdays.join(
+        " • "
+      )}`;
+    }
+
+    return "🔁 Recurring";
+  };
+
   return (
     <article style={styles.card}>
-      
+
       <div style={styles.topSection}>
         <h3 style={styles.title}>
-          {task?.title || "Untitled Task"}
+          {task?.title ||
+            "Untitled Task"}
         </h3>
       </div>
 
@@ -132,7 +177,7 @@ const TaskCard = ({ task, onTaskUpdated }) => {
       )}
 
       <div style={styles.badges}>
-        
+
         <span
           style={{
             ...styles.badge,
@@ -153,6 +198,18 @@ const TaskCard = ({ task, onTaskUpdated }) => {
             : "TODO"}
         </span>
 
+        {/* Recurring Badge */}
+        {isRecurring && (
+          <span
+            style={{
+              ...styles.badge,
+              ...styles.recurringBadge,
+            }}
+          >
+            {getRecurringLabel()}
+          </span>
+        )}
+
       </div>
 
       {dueDate && (
@@ -162,7 +219,7 @@ const TaskCard = ({ task, onTaskUpdated }) => {
       )}
 
       <div style={styles.buttons}>
-        
+
         <button
           onClick={handleComplete}
           disabled={
@@ -202,10 +259,12 @@ const TaskCard = ({ task, onTaskUpdated }) => {
 
 const styles = {
   card: {
-    background: "rgba(255,255,255,0.85)",
+    background:
+      "rgba(255,255,255,0.85)",
     borderRadius: "20px",
     padding: "28px",
-    border: "1px solid rgba(255,255,255,0.5)",
+    border:
+      "1px solid rgba(255,255,255,0.5)",
     boxShadow:
       "0 8px 25px rgba(0,0,0,0.08)",
     backdropFilter: "blur(8px)",
@@ -266,6 +325,11 @@ const styles = {
   todoStatus: {
     background: "#e2e8f0",
     color: "#475569",
+  },
+
+  recurringBadge: {
+    background: "#ede9fe",
+    color: "#7c3aed",
   },
 
   info: {
