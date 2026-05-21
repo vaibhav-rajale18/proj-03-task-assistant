@@ -36,7 +36,7 @@ const taskSchema = new mongoose.Schema(
       required: true,
     },
 
-    // Recurring task support
+    // 🔁 Recurring task support
     isRecurring: {
       type: Boolean,
       default: false,
@@ -59,6 +59,31 @@ const taskSchema = new mongoose.Schema(
           enum: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
         },
       ],
+    },
+
+    // 🔥 Completion history tracking
+    completionHistory: [
+      {
+        type: Date,
+      },
+    ],
+
+    // 🔥 Streak tracking
+    streak: {
+      current: {
+        type: Number,
+        default: 0,
+      },
+
+      longest: {
+        type: Number,
+        default: 0,
+      },
+
+      lastCompletedDate: {
+        type: Date,
+        default: null,
+      },
     },
   },
   {
