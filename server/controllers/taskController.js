@@ -1,4 +1,5 @@
 const Task = require("../models/Task");
+const calculateStreak = require("../services/streakService");
 
 const createTask = async (req, res) => {
   try {
@@ -18,7 +19,7 @@ const createTask = async (req, res) => {
       dueDate,
       user: req.user.userId,
 
-      // Recurring task fields
+      // 🔁 Recurring task fields
       isRecurring: isRecurring || false,
       recurrence: isRecurring ? recurrence : undefined,
     });
@@ -57,13 +58,37 @@ const updateTask = async (req, res) => {
       });
     }
 
+    // 🔒 Ownership check
     if (task.user.toString() !== req.user.userId) {
       return res.status(403).json({
         error: "Access denied",
       });
     }
 
+    // Store old status before update
+    const previousStatus = task.status;
+
+    // Update task fields
     Object.assign(task, req.body);
+
+    // 🔥 Streak logic
+    if (
+      task.isRecurring &&
+      previousStatus !== "completed" &&
+      task.status === "completed"
+    ) {
+      // Add completion date
+      task.completionHistory.push(
+        new Date()
+      );
+
+      // Calculate updated streak
+      const updatedStreak =
+        calculateStreak(task);
+
+      // Update streak object
+      task.streak = updatedStreak;
+    }
 
     await task.save();
 
@@ -85,6 +110,7 @@ const deleteTask = async (req, res) => {
       });
     }
 
+    // 🔒 Ownership check
     if (task.user.toString() !== req.user.userId) {
       return res.status(403).json({
         error: "Access denied",
