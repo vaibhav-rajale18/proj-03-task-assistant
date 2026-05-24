@@ -14,9 +14,16 @@ const TaskCard = ({ task, onTaskUpdated }) => {
   const status = task?.status || "todo";
   const priority = task?.priority || "low";
 
-  // Recurrence data
+  // 🔁 Recurrence data
   const isRecurring = task?.isRecurring;
   const recurrence = task?.recurrence;
+
+  // 🔥 Streak data
+  const currentStreak =
+    task?.streak?.current || 0;
+
+  const longestStreak =
+    task?.streak?.longest || 0;
 
   const handleComplete = async () => {
     if (!taskId || status === "completed") {
@@ -198,7 +205,7 @@ const TaskCard = ({ task, onTaskUpdated }) => {
             : "TODO"}
         </span>
 
-        {/* Recurring Badge */}
+        {/* 🔁 Recurring Badge */}
         {isRecurring && (
           <span
             style={{
@@ -211,6 +218,21 @@ const TaskCard = ({ task, onTaskUpdated }) => {
         )}
 
       </div>
+
+      {/* 🔥 Streak Section */}
+      {isRecurring && (
+        <div style={styles.streakContainer}>
+
+          <p style={styles.streakText}>
+            🔥 {currentStreak} day streak
+          </p>
+
+          <p style={styles.bestStreakText}>
+            🏆 Best: {longestStreak}
+          </p>
+
+        </div>
+      )}
 
       {dueDate && (
         <p style={styles.info}>
@@ -330,6 +352,31 @@ const styles = {
   recurringBadge: {
     background: "#ede9fe",
     color: "#7c3aed",
+  },
+
+  // 🔥 Streak UI
+  streakContainer: {
+    marginBottom: "18px",
+    padding: "14px",
+    borderRadius: "14px",
+    background:
+      "rgba(249,115,22,0.12)",
+    border:
+      "1px solid rgba(249,115,22,0.25)",
+  },
+
+  streakText: {
+    margin: 0,
+    color: "#ea580c",
+    fontWeight: "700",
+    fontSize: "15px",
+  },
+
+  bestStreakText: {
+    margin: "6px 0 0 0",
+    color: "#9a3412",
+    fontWeight: "600",
+    fontSize: "14px",
   },
 
   info: {
