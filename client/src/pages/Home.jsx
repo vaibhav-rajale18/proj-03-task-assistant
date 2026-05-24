@@ -148,6 +148,29 @@ const Home = () => {
       null
     );
 
+  // 🚀 Dynamic Insight Engine
+  let dynamicInsight =
+    "🚀 Start completing habits to build streaks";
+
+  if (activeStreaks > 0) {
+    dynamicInsight =
+      `🔥 You're maintaining ${activeStreaks} active streaks`;
+  }
+
+  if (completedToday > 0) {
+    dynamicInsight =
+      `🎯 You completed ${completedToday} task${
+        completedToday > 1
+          ? "s"
+          : ""
+      } today`;
+  }
+
+  if (longestStreak >= 5) {
+    dynamicInsight =
+      `🏆 Your consistency is improving with a ${longestStreak} day streak`;
+  }
+
   return (
     <div style={styles.container}>
       <div style={styles.dashboard}>
@@ -301,6 +324,10 @@ const Home = () => {
                     .streak
                     ?.longest
                 } day best streak
+              </p>
+
+              <p style={styles.dynamicInsight}>
+                {dynamicInsight}
               </p>
 
             </div>
@@ -514,6 +541,14 @@ const styles = {
     fontSize: "16px",
     color: "#9a3412",
     fontWeight: "600",
+  },
+
+  dynamicInsight: {
+    marginTop: "18px",
+    fontSize: "17px",
+    color: "#7c2d12",
+    fontWeight: "600",
+    lineHeight: "1.6",
   },
 
   buttons: {
