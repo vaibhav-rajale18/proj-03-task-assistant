@@ -529,6 +529,7 @@ const Calendar = () => {
 };
 
 const styles = {
+  
   container: {
     minHeight: "100vh",
     padding: "40px",
@@ -537,130 +538,160 @@ const styles = {
   },
 
   wrapper: {
-    maxWidth: "1000px",
+    maxWidth: "1300px",
     margin: "0 auto",
+    animation: "fadeIn 0.5s ease",
   },
 
   navigation: {
     display: "flex",
-    justifyContent:
-      "space-between",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: "40px",
+    flexWrap: "wrap",
+    gap: "15px",
   },
 
   homeButton: {
     padding: "14px 24px",
     border: "none",
-    borderRadius: "12px",
+    borderRadius: "16px",
     background:
       "linear-gradient(135deg, #7c3aed, #9333ea)",
     color: "white",
     cursor: "pointer",
     fontWeight: "700",
+    fontSize: "15px",
     boxShadow:
-      "0 6px 18px rgba(124,58,237,0.25)",
+      "0 10px 25px rgba(124,58,237,0.25)",
+    transition: "all 0.25s ease",
   },
 
   logoutButton: {
     padding: "14px 24px",
     border: "none",
-    borderRadius: "12px",
-    background: "#0f172a",
+    borderRadius: "16px",
+    background:
+      "linear-gradient(135deg, #ef4444, #f43f5e)",
     color: "white",
     cursor: "pointer",
     fontWeight: "700",
+    fontSize: "15px",
     boxShadow:
-      "0 6px 18px rgba(15,23,42,0.2)",
+      "0 10px 25px rgba(239,68,68,0.22)",
+    transition: "all 0.25s ease",
   },
 
   header: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: "40px",
+    marginBottom: "45px",
+    gap: "20px",
+    flexWrap: "wrap",
   },
 
   titleSection: {
     textAlign: "center",
+    flex: 1,
   },
 
   title: {
-    fontSize: "42px",
+    fontSize: "52px",
     fontWeight: "800",
     color: "#0f172a",
-    marginBottom: "10px",
+    marginBottom: "14px",
+    letterSpacing: "-1px",
   },
 
   navButton: {
-    width: "55px",
-    height: "55px",
+    width: "65px",
+    height: "65px",
     border: "none",
-    borderRadius: "16px",
-    background: "#7c3aed",
+    borderRadius: "20px",
+    background:
+      "linear-gradient(135deg, #7c3aed, #9333ea)",
     color: "white",
-    fontSize: "22px",
+    fontSize: "26px",
     fontWeight: "700",
     cursor: "pointer",
+    boxShadow:
+      "0 10px 25px rgba(124,58,237,0.22)",
+    transition: "all 0.25s ease",
   },
 
   todayButton: {
-    padding: "8px 18px",
+    padding: "12px 24px",
     border: "none",
-    borderRadius: "12px",
-    background: "#2563eb",
+    borderRadius: "14px",
+    background:
+      "linear-gradient(135deg, #2563eb, #3b82f6)",
     color: "white",
     fontWeight: "700",
     cursor: "pointer",
+    fontSize: "15px",
+    boxShadow:
+      "0 10px 25px rgba(37,99,235,0.2)",
   },
 
   weekHeader: {
     display: "grid",
     gridTemplateColumns:
       "repeat(7, 1fr)",
-    gap: "15px",
+    gap: "18px",
     marginBottom: "20px",
   },
 
   weekDay: {
     textAlign: "center",
-    fontWeight: "700",
+    fontWeight: "800",
     color: "#475569",
     fontSize: "16px",
+    padding: "12px",
   },
 
   grid: {
     display: "grid",
     gridTemplateColumns:
       "repeat(7, 1fr)",
-    gap: "15px",
+    gap: "18px",
   },
 
   cell: {
-    height: "90px",
-    borderRadius: "18px",
+    minHeight: "120px",
+    borderRadius: "28px",
     background:
-      "rgba(255,255,255,0.8)",
+      "rgba(255,255,255,0.72)",
+    backdropFilter: "blur(12px)",
     border:
-      "1px solid rgba(255,255,255,0.5)",
+      "1px solid rgba(255,255,255,0.45)",
     boxShadow:
-      "0 6px 20px rgba(0,0,0,0.08)",
+      "0 10px 30px rgba(0,0,0,0.08)",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     position: "relative",
-    fontSize: "20px",
-    fontWeight: "700",
+    fontSize: "24px",
+    fontWeight: "800",
     color: "#0f172a",
     cursor: "pointer",
+    transition: "all 0.25s ease",
+    overflow: "hidden",
   },
 
   todayCell: {
-    background: "#2563eb",
+    background:
+      "linear-gradient(135deg, #2563eb, #7c3aed)",
     color: "white",
+    transform: "scale(1.02)",
+    boxShadow:
+      "0 14px 35px rgba(37,99,235,0.25)",
   },
 
   selectedCell: {
-    border: "2px solid #7c3aed",
+    border:
+      "2px solid rgba(124,58,237,0.6)",
+    transform: "translateY(-3px)",
   },
 
   emptyCell: {
@@ -672,67 +703,92 @@ const styles = {
 
   badgeContainer: {
     position: "absolute",
-    top: "8px",
-    right: "8px",
+    top: "10px",
+    right: "10px",
     display: "flex",
-    gap: "6px",
+    gap: "8px",
   },
 
   normalBadge: {
-    width: "24px",
-    height: "24px",
+    width: "28px",
+    height: "28px",
     borderRadius: "50%",
-    background: "#7c3aed",
+    background:
+      "linear-gradient(135deg, #7c3aed, #9333ea)",
     color: "white",
-    fontSize: "12px",
+    fontSize: "13px",
     fontWeight: "700",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+    boxShadow:
+      "0 6px 18px rgba(124,58,237,0.25)",
   },
 
   recurringBadge: {
-    width: "24px",
-    height: "24px",
-    borderRadius: "6px",
-    background: "#a855f7",
+    width: "28px",
+    height: "28px",
+    borderRadius: "8px",
+    background:
+      "linear-gradient(135deg, #f59e0b, #f97316)",
     color: "white",
-    fontSize: "12px",
+    fontSize: "13px",
     fontWeight: "700",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+    boxShadow:
+      "0 6px 18px rgba(249,115,22,0.22)",
   },
 
   taskSection: {
-    marginTop: "50px",
+    marginTop: "60px",
   },
 
   taskSectionTitle: {
-    fontSize: "28px",
-    fontWeight: "700",
-    marginBottom: "25px",
+    fontSize: "36px",
+    fontWeight: "800",
+    marginBottom: "30px",
     color: "#0f172a",
+    textAlign: "center",
   },
 
   taskCard: {
-    background: "white",
-    padding: "20px",
-    borderRadius: "16px",
-    marginBottom: "15px",
+    background:
+      "rgba(255,255,255,0.78)",
+    backdropFilter: "blur(12px)",
+    padding: "28px",
+    borderRadius: "28px",
+    marginBottom: "22px",
     boxShadow:
-      "0 6px 20px rgba(0,0,0,0.08)",
+      "0 10px 30px rgba(0,0,0,0.08)",
+    border:
+      "1px solid rgba(255,255,255,0.4)",
+    transition: "all 0.25s ease",
   },
 
   recurringText: {
-    marginTop: "10px",
+    marginTop: "14px",
     color: "#7c3aed",
     fontWeight: "700",
+    background:
+      "rgba(124,58,237,0.08)",
+    display: "inline-block",
+    padding: "8px 14px",
+    borderRadius: "999px",
   },
 
   emptyText: {
+    textAlign: "center",
+    padding: "40px",
+    borderRadius: "24px",
+    background:
+      "rgba(255,255,255,0.75)",
     color: "#64748b",
-    fontSize: "16px",
+    fontSize: "18px",
+    fontWeight: "600",
+    boxShadow:
+      "0 10px 25px rgba(0,0,0,0.06)",
   },
 };
 
