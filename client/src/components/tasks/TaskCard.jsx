@@ -40,10 +40,13 @@ const TaskCard = ({ task, onTaskUpdated }) => {
   const longestStreak =
     task?.streak?.longest || 0;
 
+  const isCompleted =
+    status === "completed";
+
   const isOverdue = (() => {
     if (
       !task?.dueDate ||
-      status === "completed"
+      isCompleted
     ) {
       return false;
     }
@@ -62,7 +65,7 @@ const TaskCard = ({ task, onTaskUpdated }) => {
   const isDueSoon = (() => {
     if (
       !task?.dueDate ||
-      status === "completed" ||
+      isCompleted ||
       isOverdue
     ) {
       return false;
@@ -88,11 +91,27 @@ const TaskCard = ({ task, onTaskUpdated }) => {
     );
   })();
 
+  const getCardStyle = () => {
+    if (isCompleted) {
+      return styles.completedCard;
+    }
+
+    if (isOverdue) {
+      return styles.overdueCard;
+    }
+
+    if (isDueSoon) {
+      return styles.dueSoonCard;
+    }
+
+    return {};
+  };
+
   const handleComplete =
     async () => {
       if (
         !taskId ||
-        status === "completed"
+        isCompleted
       ) {
         return;
       }
@@ -234,7 +253,7 @@ const TaskCard = ({ task, onTaskUpdated }) => {
   const getStatusStyle =
     () => {
       if (
-        status === "completed"
+        isCompleted
       ) {
         return styles.completedStatus;
       }
@@ -292,7 +311,10 @@ const TaskCard = ({ task, onTaskUpdated }) => {
 
   return (
     <article
-      style={styles.card}
+      style={{
+        ...styles.card,
+        ...getCardStyle(),
+      }}
       onMouseEnter={(e) => {
         e.currentTarget.style.transform =
           "translateY(-6px)";
@@ -337,7 +359,7 @@ const TaskCard = ({ task, onTaskUpdated }) => {
             ...getStatusStyle(),
           }}
         >
-          {status === "completed"
+          {isCompleted
             ? "DONE"
             : "TODO"}
         </span>
@@ -416,15 +438,13 @@ const TaskCard = ({ task, onTaskUpdated }) => {
           }
           disabled={
             loadingComplete ||
-            status ===
-              "completed"
+            isCompleted
           }
           style={
             styles.completeButton
           }
         >
-          {status ===
-          "completed"
+          {isCompleted
             ? "Completed"
             : loadingComplete
             ? "Updating..."
@@ -478,6 +498,26 @@ const styles = {
       "blur(10px)",
     transition:
       "transform 0.25s ease, box-shadow 0.25s ease",
+  },
+
+  completedCard: {
+    opacity: 0.72,
+    border:
+      "2px solid #bfdbfe",
+  },
+
+  overdueCard: {
+    border:
+      "2px solid #ef4444",
+    boxShadow:
+      "0 12px 30px rgba(239,68,68,0.18)",
+  },
+
+  dueSoonCard: {
+    border:
+      "2px solid #f59e0b",
+    boxShadow:
+      "0 12px 30px rgba(245,158,11,0.18)",
   },
 
   topSection: {
