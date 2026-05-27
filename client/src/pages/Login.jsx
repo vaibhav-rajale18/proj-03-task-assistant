@@ -27,15 +27,14 @@ const Login = () => {
   ];
 
   const [randomQuote] =
-    useState(
-      motivationQuotes[
-        Math.floor(
-          Math.random() *
-            motivationQuotes.length
-        )
-      ]
-    );
-
+  useState(() => {
+    return motivationQuotes[
+      Math.floor(
+        Math.random() *
+          motivationQuotes.length
+      )
+    ];
+  });
   const handleSubmit =
     async (e) => {
       e.preventDefault();

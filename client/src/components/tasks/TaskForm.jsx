@@ -61,14 +61,14 @@ const TaskForm = ({
   ];
 
   const [randomQuote] =
-    useState(
-      motivationQuotes[
-        Math.floor(
-          Math.random() *
-            motivationQuotes.length
-        )
-      ]
-    );
+  useState(() => {
+    return motivationQuotes[
+      Math.floor(
+        Math.random() *
+          motivationQuotes.length
+      )
+    ];
+  });
 
   /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
