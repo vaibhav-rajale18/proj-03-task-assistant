@@ -85,7 +85,6 @@ const Home = () => {
 
   // 🔥 Productivity Analytics
 
-  // Active streaks
   const activeStreaks =
     tasks.filter(
       (task) =>
@@ -93,7 +92,6 @@ const Home = () => {
         task.streak?.current > 0
     ).length;
 
-  // Longest streak
   const longestStreak =
     tasks.reduce(
       (max, task) => {
@@ -107,14 +105,12 @@ const Home = () => {
       0
     );
 
-  // Recurring habits
   const recurringHabits =
     tasks.filter(
       (task) =>
         task.isRecurring
     ).length;
 
-  // Completed today
   const today =
     new Date().toDateString();
 
@@ -129,7 +125,6 @@ const Home = () => {
       )
     ).length;
 
-  // Most consistent habit
   const mostConsistentTask =
     tasks.reduce(
       (best, task) => {
@@ -147,6 +142,66 @@ const Home = () => {
       },
       null
     );
+
+  // 🔔 Reminder System
+
+  // 🚨 Overdue Tasks
+  const overdueTasks =
+    tasks.filter((task) => {
+      if (
+        !task.dueDate ||
+        task.status ===
+          "completed"
+      ) {
+        return false;
+      }
+
+      return (
+        new Date(task.dueDate) <
+        new Date()
+      );
+    });
+
+  // ⏰ Due Today
+  const dueTodayTasks =
+    tasks.filter((task) => {
+      if (
+        !task.dueDate ||
+        task.status ===
+          "completed"
+      ) {
+        return false;
+      }
+
+      return (
+        new Date(
+          task.dueDate
+        ).toDateString() === today
+      );
+    });
+
+  // 🔥 Streaks At Risk
+  const streakRiskTasks =
+    tasks.filter((task) => {
+      if (
+        !task.isRecurring ||
+        task.status ===
+          "completed"
+      ) {
+        return false;
+      }
+
+      const completedToday =
+        task.completionHistory?.some(
+          (date) =>
+            new Date(
+              date
+            ).toDateString() ===
+            today
+        );
+
+      return !completedToday;
+    });
 
   // 🚀 Dynamic Insight Engine
   let dynamicInsight =
@@ -189,6 +244,61 @@ const Home = () => {
           <p style={styles.welcomeSubtitle}>
             Organize your day. Focus on what matters.
           </p>
+
+        </div>
+
+        {/* 🔔 Reminder Section */}
+        <div style={styles.reminderSection}>
+
+          <h2 style={styles.reminderTitle}>
+            🔔 Today's Reminders
+          </h2>
+
+          <div style={styles.reminderCards}>
+
+            <div style={styles.overdueCard}>
+              <p style={styles.reminderEmoji}>
+                🚨
+              </p>
+
+              <h3 style={styles.reminderLabel}>
+                Overdue Tasks
+              </h3>
+
+              <p style={styles.reminderValue}>
+                {overdueTasks.length}
+              </p>
+            </div>
+
+            <div style={styles.dueTodayCard}>
+              <p style={styles.reminderEmoji}>
+                ⏰
+              </p>
+
+              <h3 style={styles.reminderLabel}>
+                Due Today
+              </h3>
+
+              <p style={styles.reminderValue}>
+                {dueTodayTasks.length}
+              </p>
+            </div>
+
+            <div style={styles.streakRiskCard}>
+              <p style={styles.reminderEmoji}>
+                🔥
+              </p>
+
+              <h3 style={styles.reminderLabel}>
+                Streaks At Risk
+              </h3>
+
+              <p style={styles.reminderValue}>
+                {streakRiskTasks.length}
+              </p>
+            </div>
+
+          </div>
 
         </div>
 
@@ -416,6 +526,83 @@ const styles = {
     color: "#475569",
   },
 
+  // 🔔 Reminder Section
+  reminderSection: {
+    marginBottom: "50px",
+  },
+
+  reminderTitle: {
+    textAlign: "center",
+    fontSize: "34px",
+    fontWeight: "800",
+    color: "#0f172a",
+    marginBottom: "30px",
+  },
+
+  reminderCards: {
+    display: "flex",
+    justifyContent: "center",
+    gap: "25px",
+    flexWrap: "wrap",
+  },
+
+  overdueCard: {
+    width: "240px",
+    padding: "28px",
+    borderRadius: "22px",
+    background:
+      "rgba(254,226,226,0.8)",
+    border:
+      "1px solid rgba(220,38,38,0.2)",
+    textAlign: "center",
+    boxShadow:
+      "0 10px 25px rgba(220,38,38,0.08)",
+  },
+
+  dueTodayCard: {
+    width: "240px",
+    padding: "28px",
+    borderRadius: "22px",
+    background:
+      "rgba(254,243,199,0.8)",
+    border:
+      "1px solid rgba(217,119,6,0.2)",
+    textAlign: "center",
+    boxShadow:
+      "0 10px 25px rgba(217,119,6,0.08)",
+  },
+
+  streakRiskCard: {
+    width: "240px",
+    padding: "28px",
+    borderRadius: "22px",
+    background:
+      "rgba(255,237,213,0.85)",
+    border:
+      "1px solid rgba(234,88,12,0.2)",
+    textAlign: "center",
+    boxShadow:
+      "0 10px 25px rgba(234,88,12,0.08)",
+  },
+
+  reminderEmoji: {
+    fontSize: "30px",
+    marginBottom: "12px",
+  },
+
+  reminderLabel: {
+    fontSize: "16px",
+    color: "#475569",
+    marginBottom: "10px",
+    fontWeight: "700",
+  },
+
+  reminderValue: {
+    fontSize: "42px",
+    fontWeight: "800",
+    color: "#0f172a",
+  },
+
   summaryCards: {
     display: "flex",
     justifyContent: "center",
@@ -456,7 +643,6 @@ const styles = {
     color: "#0f172a",
   },
 
-  // 🔥 Analytics
   analyticsSection: {
     marginBottom: "60px",
   },
@@ -508,7 +694,6 @@ const styles = {
     color: "#ea580c",
   },
 
-  // ⚡ Insight Box
   insightBox: {
     maxWidth: "700px",
     margin: "0 auto",
