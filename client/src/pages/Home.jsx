@@ -83,8 +83,33 @@ const Home = () => {
         "completed"
     ).length;
 
-  // 🔥 Productivity Analytics
+  // 📈 Productivity Score
+  const productivityPercentage =
+    totalTasks === 0
+      ? 0
+      : Math.round(
+          (completedTasks /
+            totalTasks) *
+            100
+        );
 
+  // 💬 Productivity Message
+  let productivityMessage =
+    "🚀 Small steps still matter.";
+
+  if (
+    productivityPercentage >= 80
+  ) {
+    productivityMessage =
+      "🔥 Amazing productivity today!";
+  } else if (
+    productivityPercentage >= 50
+  ) {
+    productivityMessage =
+      "⚡ You're making solid progress!";
+  }
+
+  // 🔥 Productivity Analytics
   const activeStreaks =
     tasks.filter(
       (task) =>
@@ -143,7 +168,28 @@ const Home = () => {
       null
     );
 
-  // 🔔 Reminder System
+  // 🏆 Achievement System
+  const achievements = [];
+
+  if (longestStreak >= 7) {
+    achievements.push(
+      "🔥 7 Day Streak"
+    );
+  }
+
+  if (completedTasks >= 10) {
+    achievements.push(
+      "✅ Completed 10 Tasks"
+    );
+  }
+
+  if (
+    productivityPercentage >= 80
+  ) {
+    achievements.push(
+      "🎯 Productivity Master"
+    );
+  }
 
   // 🚨 Overdue Tasks
   const overdueTasks =
@@ -398,6 +444,36 @@ const Home = () => {
 
         </div>
 
+        {/* 📈 Productivity Score */}
+        <div style={styles.progressSection}>
+
+          <h2 style={styles.progressTitle}>
+            📈 Productivity Score
+          </h2>
+
+          <div style={styles.progressCard}>
+
+            <div style={styles.progressBarBackground}>
+              <div
+                style={{
+                  ...styles.progressBarFill,
+                  width: `${productivityPercentage}%`,
+                }}
+              />
+            </div>
+
+            <p style={styles.progressText}>
+              {productivityPercentage}% completed
+            </p>
+
+            <p style={styles.progressMessage}>
+              {productivityMessage}
+            </p>
+
+          </div>
+
+        </div>
+
         {/* 🔥 Productivity Analytics */}
         <div style={styles.analyticsSection}>
 
@@ -516,38 +592,80 @@ const Home = () => {
 
           </div>
 
+          {/* 🏆 Achievements */}
+          <div style={styles.achievementSection}>
+
+            <h2 style={styles.achievementTitle}>
+              🏆 Achievements
+            </h2>
+
+            <div style={styles.achievementContainer}>
+
+              {achievements.length ===
+              0 ? (
+                <div style={styles.emptyAchievement}>
+                  🚀 Complete more tasks to unlock achievements.
+                </div>
+              ) : (
+                achievements.map(
+                  (
+                    achievement,
+                    index
+                  ) => (
+                    <div
+                      key={index}
+                      style={styles.achievementBadge}
+                    >
+                      {achievement}
+                    </div>
+                  )
+                )
+              )}
+
+            </div>
+
+          </div>
+
         </div>
 
-        {/* Actions */}
-        <div style={styles.buttons}>
+        {/* ⚡ Quick Actions */}
+        <div style={styles.quickActionsSection}>
 
-          <button
-            onClick={handleTasks}
-            style={styles.primaryButton}
-          >
-            📂 My Tasks
-          </button>
+          <h2 style={styles.quickActionsTitle}>
+            ⚡ Quick Actions
+          </h2>
 
-          <button
-            onClick={handleCreateTask}
-            style={styles.secondaryButton}
-          >
-            ➕ Create Task
-          </button>
+          <div style={styles.quickActionsGrid}>
 
-          <button
-            onClick={handleCalendar}
-            style={styles.calendarButton}
-          >
-            📅 Calendar
-          </button>
+            <div
+              style={styles.quickActionCard}
+              onClick={handleCreateTask}
+            >
+              ➕ Create New Task
+            </div>
 
-          <button
-            onClick={handleLogout}
-            style={styles.logoutButton}
-          >
-            Logout
-          </button>
+            <div
+              style={styles.quickActionCard}
+              onClick={handleTasks}
+            >
+              📂 Open My Tasks
+            </div>
+
+            <div
+              style={styles.quickActionCard}
+              onClick={handleCalendar}
+            >
+              📅 Open Calendar
+            </div>
+
+            <div
+              style={styles.quickActionCard}
+              onClick={handleLogout}
+            >
+              🚪 Logout
+            </div>
+
+          </div>
 
         </div>
 
@@ -599,7 +717,6 @@ const styles = {
     color: "#475569",
   },
 
-  // 🔔 Reminder Section
   reminderSection: {
     marginBottom: "50px",
   },
@@ -716,6 +833,61 @@ const styles = {
     color: "#0f172a",
   },
 
+  progressSection: {
+    marginBottom: "55px",
+  },
+
+  progressTitle: {
+    textAlign: "center",
+    fontSize: "34px",
+    fontWeight: "800",
+    color: "#0f172a",
+    marginBottom: "25px",
+  },
+
+  progressCard: {
+    maxWidth: "750px",
+    margin: "0 auto",
+    padding: "30px",
+    borderRadius: "24px",
+    background:
+      "rgba(255,255,255,0.85)",
+    boxShadow:
+      "0 10px 30px rgba(0,0,0,0.08)",
+  },
+
+  progressBarBackground: {
+    width: "100%",
+    height: "18px",
+    borderRadius: "999px",
+    background: "#e2e8f0",
+    overflow: "hidden",
+    marginBottom: "18px",
+  },
+
+  progressBarFill: {
+    height: "100%",
+    borderRadius: "999px",
+    background:
+      "linear-gradient(90deg, #2563eb, #7c3aed)",
+    transition: "all 0.4s ease",
+  },
+
+  progressText: {
+    textAlign: "center",
+    fontSize: "24px",
+    fontWeight: "800",
+    color: "#0f172a",
+    marginBottom: "10px",
+  },
+
+  progressMessage: {
+    textAlign: "center",
+    color: "#475569",
+    fontWeight: "600",
+    fontSize: "16px",
+  },
+
   analyticsSection: {
     marginBottom: "60px",
   },
@@ -809,7 +981,6 @@ const styles = {
     lineHeight: "1.6",
   },
 
-  // ⚡ Productivity Feed
   feedSection: {
     marginTop: "45px",
   },
@@ -845,55 +1016,74 @@ const styles = {
     lineHeight: "1.6",
   },
 
-  buttons: {
+  achievementSection: {
+    marginTop: "45px",
+  },
+
+  achievementTitle: {
+    textAlign: "center",
+    fontSize: "30px",
+    fontWeight: "800",
+    color: "#0f172a",
+    marginBottom: "20px",
+  },
+
+  achievementContainer: {
+    display: "flex",
+    justifyContent: "center",
+    flexWrap: "wrap",
+    gap: "16px",
+  },
+
+  achievementBadge: {
+    padding: "14px 20px",
+    borderRadius: "999px",
+    background:
+      "linear-gradient(135deg, #f59e0b, #f97316)",
+    color: "white",
+    fontWeight: "700",
+    boxShadow:
+      "0 8px 20px rgba(249,115,22,0.25)",
+  },
+
+  emptyAchievement: {
+    color: "#64748b",
+    fontWeight: "600",
+  },
+
+  quickActionsSection: {
+    marginBottom: "55px",
+  },
+
+  quickActionsTitle: {
+    textAlign: "center",
+    fontSize: "32px",
+    fontWeight: "800",
+    color: "#0f172a",
+    marginBottom: "25px",
+  },
+
+  quickActionsGrid: {
     display: "flex",
     justifyContent: "center",
     gap: "20px",
     flexWrap: "wrap",
   },
 
-  primaryButton: {
-    padding: "16px 30px",
-    border: "none",
-    borderRadius: "14px",
-    cursor: "pointer",
-    background: "#2563eb",
-    color: "white",
+  quickActionCard: {
+    width: "240px",
+    padding: "28px",
+    borderRadius: "22px",
+    background:
+      "rgba(255,255,255,0.85)",
+    textAlign: "center",
     fontWeight: "700",
-    fontSize: "15px",
-  },
-
-  secondaryButton: {
-    padding: "16px 30px",
-    border: "none",
-    borderRadius: "14px",
+    fontSize: "18px",
+    color: "#0f172a",
     cursor: "pointer",
-    background: "#10b981",
-    color: "white",
-    fontWeight: "700",
-    fontSize: "15px",
-  },
-
-  calendarButton: {
-    padding: "16px 30px",
-    border: "none",
-    borderRadius: "14px",
-    cursor: "pointer",
-    background: "#7c3aed",
-    color: "white",
-    fontWeight: "700",
-    fontSize: "15px",
-  },
-
-  logoutButton: {
-    padding: "16px 30px",
-    border: "none",
-    borderRadius: "14px",
-    cursor: "pointer",
-    background: "#0f172a",
-    color: "white",
-    fontWeight: "700",
-    fontSize: "15px",
+    boxShadow:
+      "0 10px 25px rgba(0,0,0,0.08)",
+    transition: "all 0.25s ease",
   },
 };
 
