@@ -15,21 +15,30 @@ const TaskForm = ({
   existingTask,
   onTaskUpdated,
 }) => {
-  const isEditMode = !!existingTask;
+  const isEditMode =
+    !!existingTask;
 
-  const [title, setTitle] = useState("");
-  const [description, setDescription] =
+  const [title, setTitle] =
     useState("");
+
+  const [
+    description,
+    setDescription,
+  ] = useState("");
+
   const [priority, setPriority] =
     useState("low");
+
   const [dueDate, setDueDate] =
     useState("");
 
   const [isRecurring, setIsRecurring] =
     useState(false);
 
-  const [recurrenceType, setRecurrenceType] =
-    useState("daily");
+  const [
+    recurrenceType,
+    setRecurrenceType,
+  ] = useState("daily");
 
   const [
     selectedWeekdays,
@@ -42,44 +51,61 @@ const TaskForm = ({
   const [error, setError] =
     useState("");
 
-  // ✅ Prefill edit data
+  const motivationQuotes = [
+    "🔥 Progress begins with one focused task.",
+    "🚀 Small wins create massive momentum.",
+    "⚡ Focus on consistency, not perfection.",
+    "🎯 Plan deeply. Execute daily.",
+    "🏆 Organized days build successful lives.",
+    "💡 Your future is shaped by today’s habits.",
+  ];
+
+  const [randomQuote] =
+    useState(
+      motivationQuotes[
+        Math.floor(
+          Math.random() *
+            motivationQuotes.length
+        )
+      ]
+    );
+
   /* eslint-disable react-hooks/set-state-in-effect */
-useEffect(() => {
-  if (!existingTask) return;
+  useEffect(() => {
+    if (!existingTask) return;
 
-  const {
-    title = "",
-    description = "",
-    priority = "low",
-    dueDate = "",
-    isRecurring = false,
-    recurrence = {},
-  } = existingTask;
+    const {
+      title = "",
+      description = "",
+      priority = "low",
+      dueDate = "",
+      isRecurring = false,
+      recurrence = {},
+    } = existingTask;
 
-  setTitle(title);
+    setTitle(title);
 
-  setDescription(description);
+    setDescription(description);
 
-  setPriority(priority);
+    setPriority(priority);
 
-  setDueDate(
-    dueDate
-      ? dueDate.split("T")[0]
-      : ""
-  );
+    setDueDate(
+      dueDate
+        ? dueDate.split("T")[0]
+        : ""
+    );
 
-  setIsRecurring(isRecurring);
+    setIsRecurring(isRecurring);
 
-  setRecurrenceType(
-    recurrence.type || "daily"
-  );
+    setRecurrenceType(
+      recurrence.type || "daily"
+    );
 
-  setSelectedWeekdays(
-    recurrence.weekdays || []
-  );
-
-}, [existingTask]);
-/* eslint-enable react-hooks/set-state-in-effect */
+    setSelectedWeekdays(
+      recurrence.weekdays || []
+    );
+  }, [existingTask]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const resetForm = () => {
     setTitle("");
@@ -95,7 +121,9 @@ useEffect(() => {
   };
 
   const toggleWeekday = (day) => {
-    if (selectedWeekdays.includes(day)) {
+    if (
+      selectedWeekdays.includes(day)
+    ) {
       setSelectedWeekdays(
         selectedWeekdays.filter(
           (item) => item !== day
@@ -109,18 +137,24 @@ useEffect(() => {
     }
   };
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (
+    event
+  ) => {
     event.preventDefault();
 
     setError("");
 
     if (!title.trim()) {
-      setError("Title is required.");
+      setError(
+        "Title is required."
+      );
       return;
     }
 
     const token =
-      localStorage.getItem("token");
+      localStorage.getItem(
+        "token"
+      );
 
     if (!token) {
       setError(
@@ -136,9 +170,11 @@ useEffect(() => {
       const payload = {
         title: title.trim(),
         description:
-          description.trim() || undefined,
+          description.trim() ||
+          undefined,
         priority,
-        dueDate: dueDate || undefined,
+        dueDate:
+          dueDate || undefined,
         isRecurring,
       };
 
@@ -148,7 +184,8 @@ useEffect(() => {
         };
 
         if (
-          recurrenceType === "custom"
+          recurrenceType ===
+          "custom"
         ) {
           payload.recurrence.weekdays =
             selectedWeekdays;
@@ -159,22 +196,23 @@ useEffect(() => {
         ? `http://localhost:5000/api/tasks/${existingTask._id}`
         : "http://localhost:5000/api/tasks";
 
-      const method = isEditMode
-        ? "PUT"
-        : "POST";
+      const method =
+        isEditMode
+          ? "PUT"
+          : "POST";
 
-      const response = await fetch(
-        url,
-        {
+      const response =
+        await fetch(url, {
           method,
           headers: {
             "Content-Type":
               "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(payload),
-        }
-      );
+          body: JSON.stringify(
+            payload
+          ),
+        });
 
       const data =
         await response.json();
@@ -209,7 +247,6 @@ useEffect(() => {
           onTaskCreated(data);
         }
       }
-
     } catch (error) {
       console.error(error);
 
@@ -220,254 +257,389 @@ useEffect(() => {
             : "create"
         } task.`
       );
-
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <section style={styles.container}>
-      <div style={styles.header}>
-        <p style={styles.badge}>
-          {isEditMode
-            ? "✏️ Edit Task"
-            : "✨ Create Something New"}
-        </p>
+    <section style={styles.page}>
+      <div
+        style={
+          styles.backgroundGlow1
+        }
+      />
 
-        <h2 style={styles.title}>
-          {isEditMode
-            ? "Edit Task"
-            : "Create New Task"}
-        </h2>
+      <div
+        style={
+          styles.backgroundGlow2
+        }
+      />
 
-        <p style={styles.subtitle}>
-          {isEditMode
-            ? "Update your task details."
-            : "Add your next focus item."}
-        </p>
-      </div>
+      <section
+        style={styles.container}
+      >
+        <div style={styles.header}>
+          <p style={styles.badge}>
+            {isEditMode
+              ? "✏️ Edit Task"
+              : "✨ Create Something New"}
+          </p>
 
-      <form onSubmit={handleSubmit}>
-        <div style={styles.field}>
-          <label style={styles.label}>
-            Title *
-          </label>
+          <h2 style={styles.title}>
+            {isEditMode
+              ? "Edit Task"
+              : "Create New Task"}
+          </h2>
 
-          <input
-            type="text"
-            value={title}
-            onChange={(e) =>
-              setTitle(e.target.value)
-            }
-            style={styles.input}
-            required
-          />
-        </div>
-
-        <div style={styles.field}>
-          <label style={styles.label}>
-            Description
-          </label>
-
-          <textarea
-            value={description}
-            onChange={(e) =>
-              setDescription(
-                e.target.value
-              )
-            }
-            rows={4}
-            style={styles.textarea}
-          />
-        </div>
-
-        <div style={styles.field}>
-          <label style={styles.label}>
-            Priority
-          </label>
-
-          <select
-            value={priority}
-            onChange={(e) =>
-              setPriority(
-                e.target.value
-              )
-            }
-            style={styles.select}
+          <p
+            style={styles.subtitle}
           >
-            <option value="low">
-              Low 🟢
-            </option>
+            {isEditMode
+              ? "Update your task details."
+              : "Design your next productive move."}
+          </p>
 
-            <option value="medium">
-              Medium 🟡
-            </option>
-
-            <option value="high">
-              High 🔴
-            </option>
-          </select>
+          <div
+            style={styles.quoteBox}
+          >
+            <p
+              style={
+                styles.quoteText
+              }
+            >
+              {randomQuote}
+            </p>
+          </div>
         </div>
 
-        <div style={styles.field}>
-          <label style={styles.label}>
-            Due Date
-          </label>
+        <form
+          onSubmit={handleSubmit}
+        >
+          <div
+            style={styles.field}
+          >
+            <label
+              style={styles.label}
+            >
+              Task Title *
+            </label>
 
-          <input
-            type="date"
-            value={dueDate}
-            onChange={(e) =>
-              setDueDate(
-                e.target.value
-              )
-            }
-            style={styles.dateInput}
-          />
-        </div>
-
-        <div style={styles.field}>
-          <label style={styles.checkboxRow}>
             <input
-              type="checkbox"
-              checked={isRecurring}
+              type="text"
+              value={title}
               onChange={(e) =>
-                setIsRecurring(
-                  e.target.checked
+                setTitle(
+                  e.target.value
                 )
               }
+              style={styles.input}
+              placeholder="Enter task title"
+              required
             />
+          </div>
 
-            <span>
-              🔁 Repeat Task
-            </span>
-          </label>
-        </div>
+          <div
+            style={styles.field}
+          >
+            <label
+              style={styles.label}
+            >
+              Description
+            </label>
 
-        {isRecurring && (
-          <>
-            <div style={styles.field}>
-              <label style={styles.label}>
-                Recurrence Type
-              </label>
+            <textarea
+              value={description}
+              onChange={(e) =>
+                setDescription(
+                  e.target.value
+                )
+              }
+              rows={4}
+              style={
+                styles.textarea
+              }
+              placeholder="Describe your task..."
+            />
+          </div>
 
-              <select
-                value={recurrenceType}
+          <div
+            style={styles.field}
+          >
+            <label
+              style={styles.label}
+            >
+              Priority
+            </label>
+
+            <select
+              value={priority}
+              onChange={(e) =>
+                setPriority(
+                  e.target.value
+                )
+              }
+              style={styles.select}
+            >
+              <option value="low">
+                Low 🟢
+              </option>
+
+              <option value="medium">
+                Medium 🟡
+              </option>
+
+              <option value="high">
+                High 🔴
+              </option>
+            </select>
+          </div>
+
+          <div
+            style={styles.field}
+          >
+            <label
+              style={styles.label}
+            >
+              Due Date
+            </label>
+
+            <input
+              type="date"
+              value={dueDate}
+              onChange={(e) =>
+                setDueDate(
+                  e.target.value
+                )
+              }
+              style={
+                styles.dateInput
+              }
+            />
+          </div>
+
+          <div
+            style={styles.recurringCard}
+          >
+            <label
+              style={
+                styles.checkboxRow
+              }
+            >
+              <input
+                type="checkbox"
+                checked={
+                  isRecurring
+                }
                 onChange={(e) =>
-                  setRecurrenceType(
-                    e.target.value
+                  setIsRecurring(
+                    e.target.checked
                   )
                 }
-                style={styles.select}
-              >
-                <option value="daily">
-                  Daily
-                </option>
+              />
 
-                <option value="weekly">
-                  Weekly
-                </option>
+              <span>
+                🔁 Make this a recurring habit
+              </span>
+            </label>
 
-                <option value="custom">
-                  Custom Weekdays
-                </option>
-              </select>
-            </div>
-
-            {recurrenceType ===
-              "custom" && (
-              <div style={styles.field}>
-                <label
-                  style={styles.label}
-                >
-                  Select Days
-                </label>
-
+            {isRecurring && (
+              <>
                 <div
                   style={
-                    styles.weekdayContainer
+                    styles.field
                   }
                 >
-                  {weekdaysList.map(
-                    (day) => (
-                      <button
-                        type="button"
-                        key={day}
-                        onClick={() =>
-                          toggleWeekday(day)
-                        }
-                        style={{
-                          ...styles.weekdayButton,
-                          background:
-                            selectedWeekdays.includes(
-                              day
-                            )
-                              ? "#2563eb"
-                              : "#e2e8f0",
-                          color:
-                            selectedWeekdays.includes(
-                              day
-                            )
-                              ? "#fff"
-                              : "#0f172a",
-                        }}
-                      >
-                        {day}
-                      </button>
-                    )
-                  )}
+                  <label
+                    style={
+                      styles.label
+                    }
+                  >
+                    Recurrence Type
+                  </label>
+
+                  <select
+                    value={
+                      recurrenceType
+                    }
+                    onChange={(e) =>
+                      setRecurrenceType(
+                        e.target.value
+                      )
+                    }
+                    style={
+                      styles.select
+                    }
+                  >
+                    <option value="daily">
+                      Daily
+                    </option>
+
+                    <option value="weekly">
+                      Weekly
+                    </option>
+
+                    <option value="custom">
+                      Custom Weekdays
+                    </option>
+                  </select>
                 </div>
-              </div>
+
+                {recurrenceType ===
+                  "custom" && (
+                  <div
+                    style={
+                      styles.field
+                    }
+                  >
+                    <label
+                      style={
+                        styles.label
+                      }
+                    >
+                      Select Days
+                    </label>
+
+                    <div
+                      style={
+                        styles.weekdayContainer
+                      }
+                    >
+                      {weekdaysList.map(
+                        (
+                          day
+                        ) => (
+                          <button
+                            type="button"
+                            key={day}
+                            onClick={() =>
+                              toggleWeekday(
+                                day
+                              )
+                            }
+                            style={{
+                              ...styles.weekdayButton,
+                              background:
+                                selectedWeekdays.includes(
+                                  day
+                                )
+                                  ? "linear-gradient(135deg, #2563eb, #7c3aed)"
+                                  : "rgba(255,255,255,0.7)",
+                              color:
+                                selectedWeekdays.includes(
+                                  day
+                                )
+                                  ? "#fff"
+                                  : "#0f172a",
+                            }}
+                          >
+                            {day}
+                          </button>
+                        )
+                      )}
+                    </div>
+                  </div>
+                )}
+              </>
             )}
-          </>
-        )}
+          </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          style={styles.button}
-        >
-          {loading
-            ? isEditMode
-              ? "Updating..."
-              : "Creating..."
-            : isEditMode
-            ? "Update Task"
-            : "Create Task"}
-        </button>
+          <button
+            type="submit"
+            disabled={loading}
+            style={styles.button}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform =
+                "translateY(-2px)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform =
+                "translateY(0px)";
+            }}
+          >
+            {loading
+              ? isEditMode
+                ? "Updating..."
+                : "Creating..."
+              : isEditMode
+              ? "Update Task"
+              : "Create Task"}
+          </button>
 
-        {error && (
-          <p style={styles.error}>
-            {error}
-          </p>
-        )}
-      </form>
+          {error && (
+            <p style={styles.error}>
+              {error}
+            </p>
+          )}
+        </form>
+      </section>
     </section>
   );
 };
 
 const baseInput = {
   width: "100%",
-  padding: "14px 16px",
-  borderRadius: "12px",
-  border: "1px solid #cbd5e1",
+  padding: "16px 18px",
+  borderRadius: "16px",
+  border:
+    "1px solid rgba(203,213,225,0.7)",
   fontSize: "15px",
   boxSizing: "border-box",
-  background: "#ffffff",
+  background:
+    "rgba(255,255,255,0.85)",
   color: "#0f172a",
+  outline: "none",
+  transition:
+    "all 0.25s ease",
+  boxShadow:
+    "0 4px 12px rgba(0,0,0,0.03)",
 };
 
 const styles = {
-  container: {
+  page: {
+    position: "relative",
+    overflow: "hidden",
+  },
+
+  backgroundGlow1: {
+    position: "absolute",
+    width: "350px",
+    height: "350px",
     background:
-      "rgba(255,255,255,0.88)",
-    borderRadius: "24px",
-    padding: "40px",
-    maxWidth: "650px",
+      "rgba(124,58,237,0.12)",
+    borderRadius: "50%",
+    filter: "blur(80px)",
+    top: "-120px",
+    left: "-120px",
+  },
+
+  backgroundGlow2: {
+    position: "absolute",
+    width: "320px",
+    height: "320px",
+    background:
+      "rgba(37,99,235,0.1)",
+    borderRadius: "50%",
+    filter: "blur(80px)",
+    bottom: "-120px",
+    right: "-120px",
+  },
+
+  container: {
+    position: "relative",
+    zIndex: 2,
+    background:
+      "rgba(255,255,255,0.75)",
+    backdropFilter:
+      "blur(14px)",
+    borderRadius: "32px",
+    padding: "45px",
+    maxWidth: "700px",
     margin: "0 auto",
+    border:
+      "1px solid rgba(255,255,255,0.45)",
     boxShadow:
-      "0 12px 35px rgba(0,0,0,0.08)",
+      "0 15px 40px rgba(0,0,0,0.08)",
   },
 
   header: {
@@ -477,36 +649,59 @@ const styles = {
 
   badge: {
     display: "inline-block",
-    padding: "8px 16px",
+    padding: "10px 18px",
     borderRadius: "999px",
     background:
       "rgba(37,99,235,0.08)",
     color: "#2563eb",
-    fontWeight: "600",
-    marginBottom: "15px",
+    fontWeight: "700",
+    marginBottom: "18px",
+    fontSize: "14px",
   },
 
   title: {
-    fontSize: "36px",
+    fontSize: "48px",
     fontWeight: "800",
     color: "#0f172a",
-    marginBottom: "10px",
+    marginBottom: "12px",
+    letterSpacing: "-1px",
   },
 
   subtitle: {
     color: "#64748b",
-    fontSize: "16px",
+    fontSize: "17px",
+    marginBottom: "24px",
+  },
+
+  quoteBox: {
+    padding: "18px",
+    borderRadius: "18px",
+    background:
+      "linear-gradient(135deg, rgba(124,58,237,0.08), rgba(37,99,235,0.08))",
+    border:
+      "1px solid rgba(124,58,237,0.08)",
+    boxShadow:
+      "0 6px 18px rgba(124,58,237,0.06)",
+  },
+
+  quoteText: {
+    textAlign: "center",
+    fontSize: "15px",
+    fontWeight: "700",
+    color: "#4c1d95",
+    lineHeight: "1.6",
   },
 
   field: {
-    marginBottom: "22px",
+    marginBottom: "24px",
   },
 
   label: {
     display: "block",
-    marginBottom: "8px",
+    marginBottom: "10px",
     fontWeight: "700",
     color: "#334155",
+    fontSize: "15px",
   },
 
   input: baseInput,
@@ -525,51 +720,77 @@ const styles = {
     ...baseInput,
     cursor: "pointer",
     appearance: "auto",
-    WebkitAppearance: "auto",
+    WebkitAppearance:
+      "auto",
     colorScheme: "light",
+  },
+
+  recurringCard: {
+    background:
+      "rgba(255,255,255,0.55)",
+    border:
+      "1px solid rgba(255,255,255,0.45)",
+    borderRadius: "24px",
+    padding: "24px",
+    marginBottom: "28px",
+    boxShadow:
+      "0 8px 25px rgba(0,0,0,0.05)",
   },
 
   checkboxRow: {
     display: "flex",
     alignItems: "center",
-    gap: "10px",
+    gap: "12px",
     fontWeight: "700",
     color: "#334155",
+    marginBottom: "18px",
   },
 
   weekdayContainer: {
     display: "flex",
     flexWrap: "wrap",
-    gap: "10px",
-    marginTop: "10px",
+    gap: "12px",
+    marginTop: "12px",
   },
 
   weekdayButton: {
     border: "none",
-    padding: "10px 14px",
-    borderRadius: "10px",
+    padding: "12px 16px",
+    borderRadius: "14px",
     cursor: "pointer",
     fontWeight: "700",
+    transition:
+      "all 0.25s ease",
+    boxShadow:
+      "0 4px 12px rgba(0,0,0,0.04)",
   },
 
   button: {
     width: "100%",
-    padding: "15px",
+    padding: "17px",
     border: "none",
-    borderRadius: "14px",
+    borderRadius: "18px",
     cursor: "pointer",
     fontWeight: "700",
     fontSize: "16px",
     background:
       "linear-gradient(135deg, #2563eb, #7c3aed)",
     color: "white",
+    boxShadow:
+      "0 10px 25px rgba(37,99,235,0.2)",
+    transition:
+      "all 0.25s ease",
   },
 
   error: {
     marginTop: "18px",
     color: "#dc2626",
     textAlign: "center",
-    fontWeight: "600",
+    fontWeight: "700",
+    background:
+      "rgba(254,226,226,0.8)",
+    padding: "12px",
+    borderRadius: "14px",
   },
 };
 
