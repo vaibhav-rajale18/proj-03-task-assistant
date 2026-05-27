@@ -1,31 +1,45 @@
 import { useState } from "react";
+import TaskForm from "./TaskForm";
 
 const TaskCard = ({ task, onTaskUpdated }) => {
-  const [loadingComplete, setLoadingComplete] = useState(false);
-  const [loadingDelete, setLoadingDelete] = useState(false);
-  const [error, setError] = useState("");
+  const [loadingComplete, setLoadingComplete] =
+    useState(false);
+
+  const [loadingDelete, setLoadingDelete] =
+    useState(false);
+
+  const [isEditing, setIsEditing] =
+    useState(false);
+
+  const [error, setError] =
+    useState("");
 
   const taskId = task?._id;
 
   const dueDate = task?.dueDate
-    ? new Date(task.dueDate).toLocaleDateString()
+    ? new Date(
+        task.dueDate
+      ).toLocaleDateString()
     : null;
 
-  const status = task?.status || "todo";
-  const priority = task?.priority || "low";
+  const status =
+    task?.status || "todo";
 
-  // 🔁 Recurrence data
-  const isRecurring = task?.isRecurring;
-  const recurrence = task?.recurrence;
+  const priority =
+    task?.priority || "low";
 
-  // 🔥 Streak data
+  const isRecurring =
+    task?.isRecurring;
+
+  const recurrence =
+    task?.recurrence;
+
   const currentStreak =
     task?.streak?.current || 0;
 
   const longestStreak =
     task?.streak?.longest || 0;
 
-  // 🚨 Overdue Detection
   const isOverdue = (() => {
     if (
       !task?.dueDate ||
@@ -36,12 +50,15 @@ const TaskCard = ({ task, onTaskUpdated }) => {
 
     const now = new Date();
 
-    const due = new Date(task.dueDate);
+    const due = new Date(
+      task.dueDate
+    );
 
-    return due.getTime() < now.getTime();
+    return (
+      due.getTime() < now.getTime()
+    );
   })();
 
-  // ⏰ Due Soon Detection
   const isDueSoon = (() => {
     if (
       !task?.dueDate ||
@@ -53,13 +70,17 @@ const TaskCard = ({ task, onTaskUpdated }) => {
 
     const now = new Date();
 
-    const due = new Date(task.dueDate);
+    const due = new Date(
+      task.dueDate
+    );
 
     const difference =
-      due.getTime() - now.getTime();
+      due.getTime() -
+      now.getTime();
 
     const hoursRemaining =
-      difference / (1000 * 60 * 60);
+      difference /
+      (1000 * 60 * 60);
 
     return (
       hoursRemaining > 0 &&
@@ -67,151 +88,210 @@ const TaskCard = ({ task, onTaskUpdated }) => {
     );
   })();
 
-  const handleComplete = async () => {
-    if (!taskId || status === "completed") {
-      return;
-    }
-
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      setError("Authorization token not found.");
-      return;
-    }
-
-    setLoadingComplete(true);
-    setError("");
-
-    try {
-      const response = await fetch(
-        `http://localhost:5000/api/tasks/${taskId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            status: "completed",
-          }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(
-          data.message ||
-            "Unable to complete task."
-        );
+  const handleComplete =
+    async () => {
+      if (
+        !taskId ||
+        status === "completed"
+      ) {
         return;
       }
 
-      onTaskUpdated(data);
+      const token =
+        localStorage.getItem(
+          "token"
+        );
 
-    } catch (error) {
-      console.error(error);
+      if (!token) {
+        setError(
+          "Authorization token not found."
+        );
 
-      setError(
-        "Unable to complete task."
-      );
+        return;
+      }
 
-    } finally {
-      setLoadingComplete(false);
-    }
-  };
+      setLoadingComplete(true);
+      setError("");
 
-  const handleDelete = async () => {
-    const token = localStorage.getItem("token");
+      try {
+        const response =
+          await fetch(
+            `http://localhost:5000/api/tasks/${taskId}`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type":
+                  "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({
+                status:
+                  "completed",
+              }),
+            }
+          );
 
-    if (!token) {
-      setError("Authorization token not found.");
-      return;
-    }
+        const data =
+          await response.json();
 
-    setLoadingDelete(true);
-    setError("");
+        if (!response.ok) {
+          setError(
+            data.message ||
+              "Unable to complete task."
+          );
 
-    try {
-      const response = await fetch(
-        `http://localhost:5000/api/tasks/${taskId}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          return;
         }
-      );
 
-      if (!response.ok) {
+        onTaskUpdated(data);
+
+      } catch (error) {
+        console.error(error);
+
+        setError(
+          "Unable to complete task."
+        );
+
+      } finally {
+        setLoadingComplete(false);
+      }
+    };
+
+  const handleDelete =
+    async () => {
+      const token =
+        localStorage.getItem(
+          "token"
+        );
+
+      if (!token) {
+        setError(
+          "Authorization token not found."
+        );
+
+        return;
+      }
+
+      setLoadingDelete(true);
+      setError("");
+
+      try {
+        const response =
+          await fetch(
+            `http://localhost:5000/api/tasks/${taskId}`,
+            {
+              method: "DELETE",
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+        if (!response.ok) {
+          setError(
+            "Unable to delete task."
+          );
+
+          return;
+        }
+
+        onTaskUpdated();
+
+      } catch (error) {
+        console.error(error);
+
         setError(
           "Unable to delete task."
         );
-        return;
+
+      } finally {
+        setLoadingDelete(false);
       }
+    };
+
+  const handleTaskEdit =
+    () => {
+      setIsEditing(false);
 
       onTaskUpdated();
+    };
 
-    } catch (error) {
-      console.error(error);
+  const getPriorityStyle =
+    () => {
+      if (priority === "high") {
+        return styles.highPriority;
+      }
 
-      setError(
-        "Unable to delete task."
-      );
+      if (
+        priority === "medium"
+      ) {
+        return styles.mediumPriority;
+      }
 
-    } finally {
-      setLoadingDelete(false);
-    }
-  };
+      return styles.lowPriority;
+    };
 
-  const getPriorityStyle = () => {
-    if (priority === "high") {
-      return styles.highPriority;
-    }
+  const getStatusStyle =
+    () => {
+      if (
+        status === "completed"
+      ) {
+        return styles.completedStatus;
+      }
 
-    if (priority === "medium") {
-      return styles.mediumPriority;
-    }
+      return styles.todoStatus;
+    };
 
-    return styles.lowPriority;
-  };
+  const getRecurringLabel =
+    () => {
+      if (
+        !isRecurring ||
+        !recurrence
+      ) {
+        return null;
+      }
 
-  const getStatusStyle = () => {
-    if (status === "completed") {
-      return styles.completedStatus;
-    }
+      if (
+        recurrence.type ===
+        "daily"
+      ) {
+        return "🔁 Daily";
+      }
 
-    return styles.todoStatus;
-  };
+      if (
+        recurrence.type ===
+        "weekly"
+      ) {
+        return "🔁 Weekly";
+      }
 
-  const getRecurringLabel = () => {
-    if (!isRecurring || !recurrence) {
-      return null;
-    }
+      if (
+        recurrence.type ===
+          "custom" &&
+        recurrence.weekdays
+          ?.length
+      ) {
+        return `🔁 ${recurrence.weekdays.join(
+          " • "
+        )}`;
+      }
 
-    if (recurrence.type === "daily") {
-      return "🔁 Daily";
-    }
+      return "🔁 Recurring";
+    };
 
-    if (recurrence.type === "weekly") {
-      return "🔁 Weekly";
-    }
-
-    if (
-      recurrence.type === "custom" &&
-      recurrence.weekdays?.length
-    ) {
-      return `🔁 ${recurrence.weekdays.join(
-        " • "
-      )}`;
-    }
-
-    return "🔁 Recurring";
-  };
+  if (isEditing) {
+    return (
+      <TaskForm
+        existingTask={task}
+        onTaskUpdated={
+          handleTaskEdit
+        }
+      />
+    );
+  }
 
   return (
     <article style={styles.card}>
-
       <div style={styles.topSection}>
         <h3 style={styles.title}>
           {task?.title ||
@@ -226,7 +306,6 @@ const TaskCard = ({ task, onTaskUpdated }) => {
       )}
 
       <div style={styles.badges}>
-
         <span
           style={{
             ...styles.badge,
@@ -247,7 +326,6 @@ const TaskCard = ({ task, onTaskUpdated }) => {
             : "TODO"}
         </span>
 
-        {/* 🔁 Recurring Badge */}
         {isRecurring && (
           <span
             style={{
@@ -259,7 +337,6 @@ const TaskCard = ({ task, onTaskUpdated }) => {
           </span>
         )}
 
-        {/* 🚨 Overdue Badge */}
         {isOverdue && (
           <span
             style={{
@@ -271,32 +348,42 @@ const TaskCard = ({ task, onTaskUpdated }) => {
           </span>
         )}
 
-        {/* ⏰ Due Soon Badge */}
-        {!isOverdue && isDueSoon && (
-          <span
-            style={{
-              ...styles.badge,
-              ...styles.dueSoonBadge,
-            }}
-          >
-            ⏰ Due Soon
-          </span>
-        )}
-
+        {!isOverdue &&
+          isDueSoon && (
+            <span
+              style={{
+                ...styles.badge,
+                ...styles.dueSoonBadge,
+              }}
+            >
+              ⏰ Due Soon
+            </span>
+          )}
       </div>
 
-      {/* 🔥 Streak Section */}
       {isRecurring && (
-        <div style={styles.streakContainer}>
-
-          <p style={styles.streakText}>
-            🔥 {currentStreak} day streak
+        <div
+          style={
+            styles.streakContainer
+          }
+        >
+          <p
+            style={
+              styles.streakText
+            }
+          >
+            🔥 {currentStreak} day
+            streak
           </p>
 
-          <p style={styles.bestStreakText}>
-            🏆 Best: {longestStreak}
+          <p
+            style={
+              styles.bestStreakText
+            }
+          >
+            🏆 Best:{" "}
+            {longestStreak}
           </p>
-
         </div>
       )}
 
@@ -307,16 +394,21 @@ const TaskCard = ({ task, onTaskUpdated }) => {
       )}
 
       <div style={styles.buttons}>
-
         <button
-          onClick={handleComplete}
+          onClick={
+            handleComplete
+          }
           disabled={
             loadingComplete ||
-            status === "completed"
+            status ===
+              "completed"
           }
-          style={styles.completeButton}
+          style={
+            styles.completeButton
+          }
         >
-          {status === "completed"
+          {status ===
+          "completed"
             ? "Completed"
             : loadingComplete
             ? "Updating..."
@@ -324,15 +416,27 @@ const TaskCard = ({ task, onTaskUpdated }) => {
         </button>
 
         <button
+          onClick={() =>
+            setIsEditing(true)
+          }
+          style={styles.editButton}
+        >
+          ✏️ Edit
+        </button>
+
+        <button
           onClick={handleDelete}
-          disabled={loadingDelete}
-          style={styles.deleteButton}
+          disabled={
+            loadingDelete
+          }
+          style={
+            styles.deleteButton
+          }
         >
           {loadingDelete
             ? "Deleting..."
             : "Delete"}
         </button>
-
       </div>
 
       {error && (
@@ -340,7 +444,6 @@ const TaskCard = ({ task, onTaskUpdated }) => {
           {error}
         </p>
       )}
-
     </article>
   );
 };
@@ -355,8 +458,8 @@ const styles = {
       "1px solid rgba(255,255,255,0.5)",
     boxShadow:
       "0 8px 25px rgba(0,0,0,0.08)",
-    backdropFilter: "blur(8px)",
-    transition: "all 0.3s ease",
+    backdropFilter:
+      "blur(8px)",
   },
 
   topSection: {
@@ -420,19 +523,16 @@ const styles = {
     color: "#7c3aed",
   },
 
-  // 🚨 Overdue Badge
   overdueBadge: {
     background: "#fee2e2",
     color: "#dc2626",
   },
 
-  // ⏰ Due Soon Badge
   dueSoonBadge: {
     background: "#fef3c7",
     color: "#d97706",
   },
 
-  // 🔥 Streak UI
   streakContainer: {
     marginBottom: "18px",
     padding: "14px",
@@ -478,8 +578,16 @@ const styles = {
     background: "#2563eb",
     color: "white",
     fontWeight: "700",
-    boxShadow:
-      "0 6px 16px rgba(37,99,235,0.25)",
+  },
+
+  editButton: {
+    padding: "12px 20px",
+    border: "none",
+    borderRadius: "12px",
+    cursor: "pointer",
+    background: "#f59e0b",
+    color: "white",
+    fontWeight: "700",
   },
 
   deleteButton: {
@@ -490,8 +598,6 @@ const styles = {
     background: "#ef4444",
     color: "white",
     fontWeight: "700",
-    boxShadow:
-      "0 6px 16px rgba(239,68,68,0.25)",
   },
 
   error: {

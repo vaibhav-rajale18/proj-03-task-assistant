@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const weekdaysList = [
   "Mon",
@@ -10,21 +10,77 @@ const weekdaysList = [
   "Sun",
 ];
 
-const TaskForm = ({ onTaskCreated }) => {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [priority, setPriority] = useState("low");
-  const [dueDate, setDueDate] = useState("");
+const TaskForm = ({
+  onTaskCreated,
+  existingTask,
+  onTaskUpdated,
+}) => {
+  const isEditMode = !!existingTask;
 
-  // Recurring task states
-  const [isRecurring, setIsRecurring] = useState(false);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] =
+    useState("");
+  const [priority, setPriority] =
+    useState("low");
+  const [dueDate, setDueDate] =
+    useState("");
+
+  const [isRecurring, setIsRecurring] =
+    useState(false);
+
   const [recurrenceType, setRecurrenceType] =
     useState("daily");
-  const [selectedWeekdays, setSelectedWeekdays] =
-    useState([]);
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [
+    selectedWeekdays,
+    setSelectedWeekdays,
+  ] = useState([]);
+
+  const [loading, setLoading] =
+    useState(false);
+
+  const [error, setError] =
+    useState("");
+
+  // ✅ Prefill edit data
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  /* eslint-disable react-hooks/set-state-in-effect */
+useEffect(() => {
+  if (!existingTask) return;
+
+  const {
+    title = "",
+    description = "",
+    priority = "low",
+    dueDate = "",
+    isRecurring = false,
+    recurrence = {},
+  } = existingTask;
+
+  setTitle(title);
+
+  setDescription(description);
+
+  setPriority(priority);
+
+  setDueDate(
+    dueDate
+      ? dueDate.split("T")[0]
+      : ""
+  );
+
+  setIsRecurring(isRecurring);
+
+  setRecurrenceType(
+    recurrence.type || "daily"
+  );
+
+  setSelectedWeekdays(
+    recurrence.weekdays || []
+  );
+
+}, [existingTask]);
+/* eslint-enable react-hooks/set-state-in-effect */
 
   const resetForm = () => {
     setTitle("");
@@ -64,10 +120,14 @@ const TaskForm = ({ onTaskCreated }) => {
       return;
     }
 
-    const token = localStorage.getItem("token");
+    const token =
+      localStorage.getItem("token");
 
     if (!token) {
-      setError("Authorization token not found.");
+      setError(
+        "Authorization token not found."
+      );
+
       return;
     }
 
@@ -80,8 +140,6 @@ const TaskForm = ({ onTaskCreated }) => {
           description.trim() || undefined,
         priority,
         dueDate: dueDate || undefined,
-
-        // Recurrence payload
         isRecurring,
       };
 
@@ -90,16 +148,26 @@ const TaskForm = ({ onTaskCreated }) => {
           type: recurrenceType,
         };
 
-        if (recurrenceType === "custom") {
+        if (
+          recurrenceType === "custom"
+        ) {
           payload.recurrence.weekdays =
             selectedWeekdays;
         }
       }
 
+      const url = isEditMode
+        ? `http://localhost:5000/api/tasks/${existingTask._id}`
+        : "http://localhost:5000/api/tasks";
+
+      const method = isEditMode
+        ? "PUT"
+        : "POST";
+
       const response = await fetch(
-        "http://localhost:5000/api/tasks",
+        url,
         {
-          method: "POST",
+          method,
           headers: {
             "Content-Type":
               "application/json",
@@ -109,30 +177,49 @@ const TaskForm = ({ onTaskCreated }) => {
         }
       );
 
-      const data = await response.json();
+      const data =
+        await response.json();
 
       if (!response.ok) {
         setError(
           data.message ||
-            "Unable to create task."
+            `Unable to ${
+              isEditMode
+                ? "update"
+                : "create"
+            } task.`
         );
+
         return;
       }
 
-      resetForm();
+      if (isEditMode) {
+        if (
+          typeof onTaskUpdated ===
+          "function"
+        ) {
+          onTaskUpdated(data);
+        }
+      } else {
+        resetForm();
 
-      if (
-        typeof onTaskCreated ===
-        "function"
-      ) {
-        onTaskCreated(data);
+        if (
+          typeof onTaskCreated ===
+          "function"
+        ) {
+          onTaskCreated(data);
+        }
       }
 
     } catch (error) {
       console.error(error);
 
       setError(
-        "Unable to create task."
+        `Unable to ${
+          isEditMode
+            ? "update"
+            : "create"
+        } task.`
       );
 
     } finally {
@@ -142,24 +229,27 @@ const TaskForm = ({ onTaskCreated }) => {
 
   return (
     <section style={styles.container}>
-
       <div style={styles.header}>
         <p style={styles.badge}>
-          ✨ Create Something New
+          {isEditMode
+            ? "✏️ Edit Task"
+            : "✨ Create Something New"}
         </p>
 
         <h2 style={styles.title}>
-          Create New Task
+          {isEditMode
+            ? "Edit Task"
+            : "Create New Task"}
         </h2>
 
         <p style={styles.subtitle}>
-          Add your next focus item.
+          {isEditMode
+            ? "Update your task details."
+            : "Add your next focus item."}
         </p>
       </div>
 
       <form onSubmit={handleSubmit}>
-
-        {/* Title */}
         <div style={styles.field}>
           <label style={styles.label}>
             Title *
@@ -176,7 +266,6 @@ const TaskForm = ({ onTaskCreated }) => {
           />
         </div>
 
-        {/* Description */}
         <div style={styles.field}>
           <label style={styles.label}>
             Description
@@ -194,7 +283,6 @@ const TaskForm = ({ onTaskCreated }) => {
           />
         </div>
 
-        {/* Priority */}
         <div style={styles.field}>
           <label style={styles.label}>
             Priority
@@ -223,7 +311,6 @@ const TaskForm = ({ onTaskCreated }) => {
           </select>
         </div>
 
-        {/* Due Date */}
         <div style={styles.field}>
           <label style={styles.label}>
             Due Date
@@ -241,7 +328,6 @@ const TaskForm = ({ onTaskCreated }) => {
           />
         </div>
 
-        {/* Recurring Toggle */}
         <div style={styles.field}>
           <label style={styles.checkboxRow}>
             <input
@@ -260,7 +346,6 @@ const TaskForm = ({ onTaskCreated }) => {
           </label>
         </div>
 
-        {/* Recurrence Options */}
         {isRecurring && (
           <>
             <div style={styles.field}>
@@ -291,7 +376,6 @@ const TaskForm = ({ onTaskCreated }) => {
               </select>
             </div>
 
-            {/* Custom Weekdays */}
             {recurrenceType ===
               "custom" && (
               <div style={styles.field}>
@@ -340,26 +424,26 @@ const TaskForm = ({ onTaskCreated }) => {
           </>
         )}
 
-        {/* Submit */}
         <button
           type="submit"
           disabled={loading}
           style={styles.button}
         >
           {loading
-            ? "Creating..."
+            ? isEditMode
+              ? "Updating..."
+              : "Creating..."
+            : isEditMode
+            ? "Update Task"
             : "Create Task"}
         </button>
 
-        {/* Error */}
         {error && (
           <p style={styles.error}>
             {error}
           </p>
         )}
-
       </form>
-
     </section>
   );
 };
