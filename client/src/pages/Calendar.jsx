@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Calendar = () => {
+  const navigate = useNavigate();
+
   const [currentDate, setCurrentDate] =
     useState(new Date());
 
@@ -72,7 +75,7 @@ const Calendar = () => {
     }
   };
 
- useEffect(() => {
+  useEffect(() => {
     const loadTasks = async () => {
       await fetchTasks();
     };
@@ -160,12 +163,10 @@ const Calendar = () => {
       task.createdAt
     );
 
-    // Prevent backward recurrence
     if (targetDate < createdDate) {
       return false;
     }
 
-    // Daily
     if (
       task.recurrence.type ===
       "daily"
@@ -173,7 +174,6 @@ const Calendar = () => {
       return true;
     }
 
-    // Weekly
     if (
       task.recurrence.type ===
       "weekly"
@@ -184,7 +184,6 @@ const Calendar = () => {
       );
     }
 
-    // Custom weekdays
     if (
       task.recurrence.type ===
       "custom"
@@ -222,7 +221,6 @@ const Calendar = () => {
 
     tasks.forEach((task) => {
 
-      // Normal tasks
       if (
         task.dueDate &&
         !task.isRecurring
@@ -243,7 +241,6 @@ const Calendar = () => {
         }
       }
 
-      // Recurring tasks
       if (
         isRecurringTaskForDate(
           task,
@@ -275,7 +272,6 @@ const Calendar = () => {
           selectedDay
         );
 
-      // Normal task
       if (
         task.dueDate &&
         !task.isRecurring
@@ -297,7 +293,6 @@ const Calendar = () => {
         }
       }
 
-      // Recurring task
       return isRecurringTaskForDate(
         task,
         selectedDate
@@ -308,6 +303,33 @@ const Calendar = () => {
   return (
     <div style={styles.container}>
       <div style={styles.wrapper}>
+
+        {/* Navigation */}
+        <div style={styles.navigation}>
+
+          <button
+            onClick={() =>
+              navigate("/")
+            }
+            style={styles.homeButton}
+          >
+            ← Home
+          </button>
+
+          <button
+            onClick={() => {
+              localStorage.removeItem(
+                "token"
+              );
+
+              navigate("/login");
+            }}
+            style={styles.logoutButton}
+          >
+            Logout
+          </button>
+
+        </div>
 
         {/* Header */}
         <div style={styles.header}>
@@ -405,7 +427,6 @@ const Calendar = () => {
                         }
                       >
 
-                        {/* Normal tasks */}
                         {taskCounts.normal >
                           0 && (
                           <div
@@ -419,7 +440,6 @@ const Calendar = () => {
                           </div>
                         )}
 
-                        {/* Recurring tasks */}
                         {taskCounts.recurring >
                           0 && (
                           <div
@@ -519,6 +539,38 @@ const styles = {
   wrapper: {
     maxWidth: "1000px",
     margin: "0 auto",
+  },
+
+  navigation: {
+    display: "flex",
+    justifyContent:
+      "space-between",
+    marginBottom: "40px",
+  },
+
+  homeButton: {
+    padding: "14px 24px",
+    border: "none",
+    borderRadius: "12px",
+    background:
+      "linear-gradient(135deg, #7c3aed, #9333ea)",
+    color: "white",
+    cursor: "pointer",
+    fontWeight: "700",
+    boxShadow:
+      "0 6px 18px rgba(124,58,237,0.25)",
+  },
+
+  logoutButton: {
+    padding: "14px 24px",
+    border: "none",
+    borderRadius: "12px",
+    background: "#0f172a",
+    color: "white",
+    cursor: "pointer",
+    fontWeight: "700",
+    boxShadow:
+      "0 6px 18px rgba(15,23,42,0.2)",
   },
 
   header: {
