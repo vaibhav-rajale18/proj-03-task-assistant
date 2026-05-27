@@ -14,7 +14,7 @@ const Tasks = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
-  const [sortOption, setSortOption] = useState("latest");
+  const [sortOption, setSortOption] = useState("smart");
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -83,7 +83,7 @@ const Tasks = () => {
     setSearchQuery("");
     setStatusFilter("all");
     setPriorityFilter("all");
-    setSortOption("latest");
+    setSortOption("smart");
   };
 
   useEffect(() => {
@@ -93,6 +93,67 @@ const Tasks = () => {
 
     loadTasks();
   }, []);
+
+  // 🚀 Smart Priority Score
+  const getTaskPriorityScore = (task) => {
+    let score = 0;
+
+    const now = new Date();
+
+    // 🚨 Overdue tasks
+    if (
+      task.dueDate &&
+      task.status !== "completed" &&
+      new Date(task.dueDate) < now
+    ) {
+      score += 100;
+    }
+
+    // ⏰ Due within 24 hours
+    if (
+      task.dueDate &&
+      task.status !== "completed"
+    ) {
+      const dueDate =
+        new Date(task.dueDate);
+
+      const difference =
+        dueDate.getTime() -
+        now.getTime();
+
+      const hoursRemaining =
+        difference /
+        (1000 * 60 * 60);
+
+      if (
+        hoursRemaining > 0 &&
+        hoursRemaining <= 24
+      ) {
+        score += 70;
+      }
+    }
+
+    // 🔥 High priority
+    if (task.priority === "high") {
+      score += 50;
+    }
+
+    if (
+      task.priority === "medium"
+    ) {
+      score += 30;
+    }
+
+    // 🔁 Recurring habits
+    if (
+      task.isRecurring &&
+      task.status !== "completed"
+    ) {
+      score += 20;
+    }
+
+    return score;
+  };
 
   const filteredTasks = [...tasks]
     .filter((task) =>
@@ -115,6 +176,21 @@ const Tasks = () => {
           priorityFilter
     )
     .sort((a, b) => {
+
+      // 🚀 Smart Prioritization
+      if (
+        sortOption === "smart"
+      ) {
+        return (
+          getTaskPriorityScore(
+            b
+          ) -
+          getTaskPriorityScore(
+            a
+          )
+        );
+      }
+
       if (
         sortOption === "latest"
       ) {
@@ -387,6 +463,10 @@ const Tasks = () => {
                   styles.select
                 }
               >
+                <option value="smart">
+                  Smart Priority
+                </option>
+
                 <option value="latest">
                   Latest
                 </option>
