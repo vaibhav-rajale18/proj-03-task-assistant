@@ -132,24 +132,20 @@ const TaskCard = ({ task, onTaskUpdated }) => {
       setLoadingComplete(true);
       setError("");
 
-      try {
-        const response =
-          await fetch(
-            `http://localhost:5000/api/tasks/${taskId}`,
-            {
-              method: "PUT",
-              headers: {
-                "Content-Type":
-                  "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-              body: JSON.stringify({
-                status:
-                  "completed",
-              }),
-            }
-          );
-
+     try {
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL}/api/tasks/${taskId}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        status: "completed",
+      }),
+    }
+  );
         const data =
           await response.json();
 
@@ -195,16 +191,15 @@ const TaskCard = ({ task, onTaskUpdated }) => {
       setError("");
 
       try {
-        const response =
-          await fetch(
-            `http://localhost:5000/api/tasks/${taskId}`,
-            {
-              method: "DELETE",
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL}/api/tasks/${taskId}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 
         if (!response.ok) {
           setError(

@@ -47,15 +47,15 @@ const Calendar = () => {
 
     if (!token) return;
 
-    try {
-      const response = await fetch(
-        "http://localhost:5000/api/tasks",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+   try {
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL}/api/tasks`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 
       const data = await response.json();
 

@@ -43,8 +43,7 @@ const Login = () => {
 
       try {
         const res =
-          await fetch(
-            "http://localhost:5000/api/auth/login",
+          await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`  ,     
             {
               method: "POST",
               headers: {
@@ -54,6 +53,7 @@ const Login = () => {
               body: JSON.stringify({
                 email,
                 password,
+              
               }),
             }
           );
