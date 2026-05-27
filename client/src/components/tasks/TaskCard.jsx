@@ -291,7 +291,23 @@ const TaskCard = ({ task, onTaskUpdated }) => {
   }
 
   return (
-    <article style={styles.card}>
+    <article
+      style={styles.card}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform =
+          "translateY(-6px)";
+
+        e.currentTarget.style.boxShadow =
+          "0 18px 40px rgba(0,0,0,0.12)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform =
+          "translateY(0px)";
+
+        e.currentTarget.style.boxShadow =
+          "0 10px 30px rgba(0,0,0,0.08)";
+      }}
+    >
       <div style={styles.topSection}>
         <h3 style={styles.title}>
           {task?.title ||
@@ -451,15 +467,17 @@ const TaskCard = ({ task, onTaskUpdated }) => {
 const styles = {
   card: {
     background:
-      "rgba(255,255,255,0.85)",
-    borderRadius: "20px",
+      "rgba(255,255,255,0.88)",
+    borderRadius: "22px",
     padding: "28px",
     border:
-      "1px solid rgba(255,255,255,0.5)",
+      "1px solid rgba(255,255,255,0.55)",
     boxShadow:
-      "0 8px 25px rgba(0,0,0,0.08)",
+      "0 10px 30px rgba(0,0,0,0.08)",
     backdropFilter:
-      "blur(8px)",
+      "blur(10px)",
+    transition:
+      "transform 0.25s ease, box-shadow 0.25s ease",
   },
 
   topSection: {
@@ -575,9 +593,13 @@ const styles = {
     border: "none",
     borderRadius: "12px",
     cursor: "pointer",
-    background: "#2563eb",
+    background:
+      "linear-gradient(135deg, #2563eb, #1d4ed8)",
     color: "white",
     fontWeight: "700",
+    transition: "0.2s ease",
+    boxShadow:
+      "0 6px 16px rgba(37,99,235,0.25)",
   },
 
   editButton: {
@@ -585,9 +607,13 @@ const styles = {
     border: "none",
     borderRadius: "12px",
     cursor: "pointer",
-    background: "#f59e0b",
+    background:
+      "linear-gradient(135deg, #f59e0b, #d97706)",
     color: "white",
     fontWeight: "700",
+    transition: "0.2s ease",
+    boxShadow:
+      "0 6px 16px rgba(245,158,11,0.25)",
   },
 
   deleteButton: {
@@ -595,9 +621,13 @@ const styles = {
     border: "none",
     borderRadius: "12px",
     cursor: "pointer",
-    background: "#ef4444",
+    background:
+      "linear-gradient(135deg, #ef4444, #dc2626)",
     color: "white",
     fontWeight: "700",
+    transition: "0.2s ease",
+    boxShadow:
+      "0 6px 16px rgba(239,68,68,0.25)",
   },
 
   error: {
