@@ -25,11 +25,28 @@ const TaskCard = ({ task, onTaskUpdated }) => {
   const longestStreak =
     task?.streak?.longest || 0;
 
+  // 🚨 Overdue Detection
+  const isOverdue = (() => {
+    if (
+      !task?.dueDate ||
+      status === "completed"
+    ) {
+      return false;
+    }
+
+    const now = new Date();
+
+    const due = new Date(task.dueDate);
+
+    return due.getTime() < now.getTime();
+  })();
+
   // ⏰ Due Soon Detection
   const isDueSoon = (() => {
     if (
       !task?.dueDate ||
-      status === "completed"
+      status === "completed" ||
+      isOverdue
     ) {
       return false;
     }
@@ -242,8 +259,20 @@ const TaskCard = ({ task, onTaskUpdated }) => {
           </span>
         )}
 
+        {/* 🚨 Overdue Badge */}
+        {isOverdue && (
+          <span
+            style={{
+              ...styles.badge,
+              ...styles.overdueBadge,
+            }}
+          >
+            🚨 Overdue
+          </span>
+        )}
+
         {/* ⏰ Due Soon Badge */}
-        {isDueSoon && (
+        {!isOverdue && isDueSoon && (
           <span
             style={{
               ...styles.badge,
@@ -389,6 +418,12 @@ const styles = {
   recurringBadge: {
     background: "#ede9fe",
     color: "#7c3aed",
+  },
+
+  // 🚨 Overdue Badge
+  overdueBadge: {
+    background: "#fee2e2",
+    color: "#dc2626",
   },
 
   // ⏰ Due Soon Badge
