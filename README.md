@@ -219,4 +219,4 @@ Project is currently paused while newer portfolio projects are being developed.
 
 # 👨‍💻 Developer
 
-Built by Vaibhav  rajale as part of a placement-focused MERN & Full-Stack development roadmap.
+Built by Vaibhav Rajale as part of a learning and practicing MERN & Full-Stack development roadmap.
