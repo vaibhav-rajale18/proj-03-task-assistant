@@ -226,6 +226,55 @@ const Home = () => {
       `🏆 Your consistency is improving with a ${longestStreak} day streak`;
   }
 
+  // ⚡ Productivity Feed
+  const productivityFeed = [];
+
+  if (overdueTasks.length > 0) {
+    productivityFeed.push(
+      `🚨 You have ${overdueTasks.length} overdue task${
+        overdueTasks.length > 1
+          ? "s"
+          : ""
+      }. Clear them to stay on track.`
+    );
+  }
+
+  if (dueTodayTasks.length > 0) {
+    productivityFeed.push(
+      `⏰ ${dueTodayTasks.length} task${
+        dueTodayTasks.length > 1
+          ? "s are"
+          : " is"
+      } due today.`
+    );
+  }
+
+  if (activeStreaks > 0) {
+    productivityFeed.push(
+      `🔥 You're maintaining ${activeStreaks} active streak${
+        activeStreaks > 1
+          ? "s"
+          : ""
+      }. Keep the momentum going.`
+    );
+  }
+
+  if (completedToday > 0) {
+    productivityFeed.push(
+      `🎯 Great work! You've completed ${completedToday} task${
+        completedToday > 1
+          ? "s"
+          : ""
+      } today.`
+    );
+  }
+
+  if (productivityFeed.length === 0) {
+    productivityFeed.push(
+      "🚀 Start completing tasks to build productivity momentum."
+    );
+  }
+
   return (
     <div style={styles.container}>
       <div style={styles.dashboard}>
@@ -442,6 +491,30 @@ const Home = () => {
 
             </div>
           )}
+
+          {/* ⚡ Productivity Feed */}
+          <div style={styles.feedSection}>
+
+            <h2 style={styles.feedTitle}>
+              ⚡ Productivity Feed
+            </h2>
+
+            <div style={styles.feedContainer}>
+
+              {productivityFeed.map(
+                (message, index) => (
+                  <div
+                    key={index}
+                    style={styles.feedItem}
+                  >
+                    {message}
+                  </div>
+                )
+              )}
+
+            </div>
+
+          </div>
 
         </div>
 
@@ -733,6 +806,42 @@ const styles = {
     fontSize: "17px",
     color: "#7c2d12",
     fontWeight: "600",
+    lineHeight: "1.6",
+  },
+
+  // ⚡ Productivity Feed
+  feedSection: {
+    marginTop: "45px",
+  },
+
+  feedTitle: {
+    textAlign: "center",
+    fontSize: "30px",
+    fontWeight: "800",
+    color: "#0f172a",
+    marginBottom: "25px",
+  },
+
+  feedContainer: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "16px",
+    maxWidth: "850px",
+    margin: "0 auto",
+  },
+
+  feedItem: {
+    padding: "20px",
+    borderRadius: "18px",
+    background:
+      "rgba(255,255,255,0.85)",
+    border:
+      "1px solid rgba(255,255,255,0.4)",
+    boxShadow:
+      "0 8px 20px rgba(0,0,0,0.06)",
+    fontSize: "16px",
+    fontWeight: "600",
+    color: "#334155",
     lineHeight: "1.6",
   },
 
