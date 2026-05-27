@@ -11,10 +11,14 @@ const Tasks = () => {
     new URLSearchParams(location.search).get("create") === "true";
 
   const [tasks, setTasks] = useState([]);
+
+  // 🔍 Filters
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
   const [sortOption, setSortOption] = useState("smart");
+  const [showRecurringOnly, setShowRecurringOnly] =
+    useState(false);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -47,7 +51,7 @@ const Tasks = () => {
       if (!response.ok) {
         setError(
           data.message ||
-          "Unable to load tasks."
+            "Unable to load tasks."
         );
 
         setTasks([]);
@@ -84,6 +88,7 @@ const Tasks = () => {
     setStatusFilter("all");
     setPriorityFilter("all");
     setSortOption("smart");
+    setShowRecurringOnly(false);
   };
 
   useEffect(() => {
@@ -155,26 +160,42 @@ const Tasks = () => {
     return score;
   };
 
+  // 🚀 Smart Filter + Search + Sort Engine
   const filteredTasks = [...tasks]
-    .filter((task) =>
-      task.title
-        .toLowerCase()
-        .includes(
-          searchQuery.toLowerCase()
-        )
-    )
+    .filter((task) => {
+      const query =
+        searchQuery.toLowerCase();
+
+      return (
+        task.title
+          ?.toLowerCase()
+          .includes(query) ||
+        task.description
+          ?.toLowerCase()
+          .includes(query)
+      );
+    })
+
     .filter((task) =>
       statusFilter === "all"
         ? true
         : task.status ===
           statusFilter
     )
+
     .filter((task) =>
       priorityFilter === "all"
         ? true
         : task.priority ===
           priorityFilter
     )
+
+    .filter((task) =>
+      showRecurringOnly
+        ? task.isRecurring
+        : true
+    )
+
     .sort((a, b) => {
 
       // 🚀 Smart Prioritization
@@ -269,6 +290,12 @@ const Tasks = () => {
         "completed"
     ).length;
 
+  const recurringTasks =
+    tasks.filter(
+      (task) =>
+        task.isRecurring
+    ).length;
+
   return (
     <div style={styles.container}>
       <div style={styles.dashboard}>
@@ -334,9 +361,7 @@ const Tasks = () => {
                 <h3>
                   {totalTasks}
                 </h3>
-                <p>
-                  Total
-                </p>
+                <p>Total</p>
               </div>
 
               <div style={styles.card}>
@@ -344,21 +369,23 @@ const Tasks = () => {
                 <h3>
                   {pendingTasks}
                 </h3>
-                <p>
-                  Pending
-                </p>
+                <p>Pending</p>
               </div>
 
               <div style={styles.card}>
                 ✅
                 <h3>
-                  {
-                    completedTasks
-                  }
+                  {completedTasks}
                 </h3>
-                <p>
-                  Done
-                </p>
+                <p>Done</p>
+              </div>
+
+              <div style={styles.card}>
+                🔁
+                <h3>
+                  {recurringTasks}
+                </h3>
+                <p>Recurring</p>
               </div>
 
             </div>
@@ -368,7 +395,7 @@ const Tasks = () => {
 
               <input
                 type="text"
-                placeholder="Search..."
+                placeholder="Search tasks..."
                 value={
                   searchQuery
                 }
@@ -402,7 +429,7 @@ const Tasks = () => {
                 }
               >
                 <option value="all">
-                  Status
+                  All Status
                 </option>
 
                 <option value="todo">
@@ -410,7 +437,7 @@ const Tasks = () => {
                 </option>
 
                 <option value="completed">
-                  Done
+                  Completed
                 </option>
               </select>
 
@@ -431,7 +458,7 @@ const Tasks = () => {
                 }
               >
                 <option value="all">
-                  Priority
+                  All Priority
                 </option>
 
                 <option value="high">
@@ -484,6 +511,28 @@ const Tasks = () => {
                 </option>
               </select>
 
+              {/* 🔁 Recurring Toggle */}
+              <button
+                onClick={() =>
+                  setShowRecurringOnly(
+                    !showRecurringOnly
+                  )
+                }
+                style={{
+                  ...styles.recurringButton,
+                  background:
+                    showRecurringOnly
+                      ? "#7c3aed"
+                      : "#e2e8f0",
+                  color:
+                    showRecurringOnly
+                      ? "white"
+                      : "#0f172a",
+                }}
+              >
+                🔁 Recurring Only
+              </button>
+
               <button
                 onClick={
                   handleClearFilters
@@ -496,6 +545,19 @@ const Tasks = () => {
               </button>
 
             </div>
+
+            {/* Results */}
+            <p style={styles.resultsText}>
+              Showing{" "}
+              {
+                filteredTasks.length
+              }{" "}
+              task
+              {filteredTasks.length !==
+              1
+                ? "s"
+                : ""}
+            </p>
 
             {/* Tasks */}
             {loading ? (
@@ -609,11 +671,12 @@ const styles = {
     padding: "25px",
     borderRadius: "20px",
     background:
-      "rgba(255,255,255,0.8)",
+      "rgba(255,255,255,0.85)",
     textAlign: "center",
     boxShadow:
       "0 8px 20px rgba(0,0,0,0.08)",
     fontSize: "24px",
+    fontWeight: "700",
   },
 
   toolbar: {
@@ -622,7 +685,7 @@ const styles = {
     flexWrap: "wrap",
     justifyContent:
       "center",
-    marginBottom: "40px",
+    marginBottom: "25px",
   },
 
   searchInput: {
@@ -630,7 +693,8 @@ const styles = {
     borderRadius: "12px",
     border:
       "1px solid #cbd5e1",
-    minWidth: "250px",
+    minWidth: "260px",
+    fontSize: "15px",
   },
 
   select: {
@@ -638,6 +702,16 @@ const styles = {
     borderRadius: "12px",
     border:
       "1px solid #cbd5e1",
+    fontSize: "15px",
+  },
+
+  recurringButton: {
+    padding: "14px 18px",
+    border: "none",
+    borderRadius: "12px",
+    cursor: "pointer",
+    fontWeight: "700",
+    transition: "0.2s ease",
   },
 
   clearButton: {
@@ -648,6 +722,14 @@ const styles = {
     color: "white",
     cursor: "pointer",
     fontWeight: "700",
+  },
+
+  resultsText: {
+    textAlign: "center",
+    marginBottom: "30px",
+    color: "#475569",
+    fontWeight: "600",
+    fontSize: "16px",
   },
 
   taskList: {
