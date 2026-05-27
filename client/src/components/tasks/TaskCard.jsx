@@ -25,6 +25,31 @@ const TaskCard = ({ task, onTaskUpdated }) => {
   const longestStreak =
     task?.streak?.longest || 0;
 
+  // ⏰ Due Soon Detection
+  const isDueSoon = (() => {
+    if (
+      !task?.dueDate ||
+      status === "completed"
+    ) {
+      return false;
+    }
+
+    const now = new Date();
+
+    const due = new Date(task.dueDate);
+
+    const difference =
+      due.getTime() - now.getTime();
+
+    const hoursRemaining =
+      difference / (1000 * 60 * 60);
+
+    return (
+      hoursRemaining > 0 &&
+      hoursRemaining <= 24
+    );
+  })();
+
   const handleComplete = async () => {
     if (!taskId || status === "completed") {
       return;
@@ -217,6 +242,18 @@ const TaskCard = ({ task, onTaskUpdated }) => {
           </span>
         )}
 
+        {/* ⏰ Due Soon Badge */}
+        {isDueSoon && (
+          <span
+            style={{
+              ...styles.badge,
+              ...styles.dueSoonBadge,
+            }}
+          >
+            ⏰ Due Soon
+          </span>
+        )}
+
       </div>
 
       {/* 🔥 Streak Section */}
@@ -352,6 +389,12 @@ const styles = {
   recurringBadge: {
     background: "#ede9fe",
     color: "#7c3aed",
+  },
+
+  // ⏰ Due Soon Badge
+  dueSoonBadge: {
+    background: "#fef3c7",
+    color: "#d97706",
   },
 
   // 🔥 Streak UI
